@@ -19,7 +19,7 @@ If your followed all the given instructions correctly, your repository will be a
 
 A HTML template integrated with the given GitHub repository templates, based on github.com/cepdnaclk/eYY-project-theme . If you like to remove this default theme and make your own web page, you can remove the file, docs/_config.yml and create the site using HTML. -->
 
-# Project Title
+# Kitchen Food Platform
 
 ---
 
@@ -50,19 +50,19 @@ The Kitchen Foods platform addresses a significant gap in the Sri Lankan market 
 
 ## Solution Architecture
 
-High level diagram + description
+High level diagram + description (will be added later)
 
 ## Software Designs
 
-Detailed designs with many sub-sections
+Detailed designs with many sub-sections (will be added later)
 
 ## Testing
 
-Testing done on software : detailed + summarized results
+Testing done on software : detailed + summarized results (will be added later)
 
 ## Conclusion
 
-What was achieved, future developments, commercialization plans
+What was achieved, future developments, commercialization plans (will be added later)
 
 ## Links
 

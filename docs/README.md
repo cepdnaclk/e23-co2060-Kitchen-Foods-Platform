@@ -3,7 +3,7 @@ layout: home
 permalink: index.html
 
 # Please update this with your repository name and project title
-repository-name: eYY-co2060-project-template
+repository-name: e23-co2060-Kitchen-Foods-Platform
 title: Project Template
 ---
 
@@ -19,14 +19,15 @@ If your followed all the given instructions correctly, your repository will be a
 
 A HTML template integrated with the given GitHub repository templates, based on github.com/cepdnaclk/eYY-project-theme . If you like to remove this default theme and make your own web page, you can remove the file, docs/_config.yml and create the site using HTML. -->
 
-# Project Title
+# Kitchen Food Platform
 
 ---
 
 ## Team
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
--  eNumber, Name, [email](mailto:name@email.com)
+-  E/23/001, A.W.A.V.D.Abesekara, [e23001@eng.pdn.ac.lk](mailto:e23001@eng.pdn.ac.lk)
+-  E/23/043, C.M.H.K. Chandrasekara, [e23043@eng.pdn.ac.lk](mailto:e23043@eng.pdn.ac.lk)
+-  E/23/082, D.M.N.R.Dissanayake, [e23082@eng.pdn.ac.lk](mailto:e23082@eng.pdn.ac.lk)
+-  E/23/130, H.M.S.Y.Herath, [e23130@eng.pdn.ac.lk](mailto:e23130@eng.pdn.ac.lk)
 
 <!-- Image (photo/drawing of the final hardware) should be here -->
 
@@ -44,29 +45,29 @@ A HTML template integrated with the given GitHub repository templates, based on 
 
 ## Introduction
 
-Description of the real world problem and solution, impact
+The Kitchen Foods platform addresses a significant gap in the Sri Lankan market by connecting verified home chefs. This includes particularly women looking for income generating opportunities with customers like office workers, tourists and local residents. Many skilled individuals in local communities lack the means to access traditional commercial markets, while consumers often struggle to find healthy and authentic homemade meals. By establishing a hyper-local digital marketplace, the system allows these chefs to monetize their skills directly from their own kitchens. This solution promotes economic empowerment and financial independence while simultaneously improving public health and cultural food accessibility. Ultimately, the platform serves as a secure technology bridge that combines community-based food preparation with modern convenience to ensure trust and efficiency for both parties
 
 
 ## Solution Architecture
 
-High level diagram + description
+High level diagram + description (will be added later)
 
 ## Software Designs
 
-Detailed designs with many sub-sections
+Detailed designs with many sub-sections (will be added later)
 
 ## Testing
 
-Testing done on software : detailed + summarized results
+Testing done on software : detailed + summarized results (will be added later)
 
 ## Conclusion
 
-What was achieved, future developments, commercialization plans
+What was achieved, future developments, commercialization plans (will be added later)
 
 ## Links
 
-- [Project Repository](https://github.com/cepdnaclk/{{ page.repository-name }}){:target="_blank"}
-- [Project Page](https://cepdnaclk.github.io/{{ page.repository-name}}){:target="_blank"}
+- [Project Repository](https://github.com/cepdnaclk/e23-co2060-Kitchen-Foods-Platform){:target="_blank"}
+- [Project Page](https://cepdnaclk.github.io/e23-co2060-Kitchen-Foods-Platform){:target="_blank"}
 - [Department of Computer Engineering](http://www.ce.pdn.ac.lk/)
 - [University of Peradeniya](https://eng.pdn.ac.lk/)
 

@@ -2,6 +2,9 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import pool from "./config/db.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
+import userRoutes from "./routes/user.route.js";
+import createUserTable from "./data/createUserTable.js";
 
 const app = express();
 
@@ -23,6 +26,15 @@ app.get("/", async (req, res) => {
     res.status(500).json({ error: "Database connection error" });
   }
 });
+
+// Routes
+app.use("/api", userRoutes);
+
+// Error handling middleware - should be after all routes
+app.use(errorHandler);
+
+// Create tables on server start
+createUserTable();
 
 const startServer = async () => {
   const PORT = process.env.PORT || 8000;

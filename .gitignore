@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+dist/
+build/
+.env
+
+# OS-specific files (Important for your Mac!)
+.DS_Store
+Thumbs.db
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Antigravity/VS Code settings
+.vscode/
+.antigravity/

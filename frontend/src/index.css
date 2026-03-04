@@ -13,14 +13,14 @@
 
 @layer base {
   body {
-    @apply bg-brand-dark text-white font-sans antialiased;
+    @apply bg-brand-cream text-stone-900 font-sans antialiased;
   }
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(0, 0, 0, 0.03);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .text-glow {

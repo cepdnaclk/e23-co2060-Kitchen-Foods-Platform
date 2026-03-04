@@ -28,14 +28,14 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-brand-dark/80 backdrop-blur-md border-b border-white/5">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-brand-cream/80 backdrop-blur-md border-b border-stone-900/5">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-serif font-bold tracking-tight text-white">Kitchen Foods</span>
+            <span className="text-xl font-serif font-bold tracking-tight text-stone-900">Kitchen Foods</span>
           </div>
 
-          <div className="hidden md:flex items-center gap-10 text-sm font-medium text-white/70">
+          <div className="hidden md:flex items-center gap-10 text-sm font-medium text-stone-900/70">
             {['Home', 'Menu', 'Chefs', 'About', 'Contact'].map((item) => (
               <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-brand-primary transition-colors">{item}</a>
             ))}
@@ -47,7 +47,7 @@ const Navbar = () => {
             </button>
 
             <button
-              className="md:hidden text-white p-2"
+              className="md:hidden text-stone-900 p-2"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <Utensils size={24} /> : <ChefHat size={24} />}
@@ -63,14 +63,14 @@ const Navbar = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden bg-brand-dark border-b border-white/5 overflow-hidden"
+            className="md:hidden bg-brand-cream border-b border-stone-900/5 overflow-hidden"
           >
             <div className="px-6 py-8 flex flex-col gap-6">
               {['Home', 'Menu', 'Chefs', 'About', 'Contact'].map((item) => (
                 <a
                   key={item}
                   href={`#${item.toLowerCase()}`}
-                  className="text-lg font-serif text-white/70 hover:text-brand-primary"
+                  className="text-lg font-serif text-stone-900/70 hover:text-brand-primary"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item}
@@ -120,7 +120,7 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden bg-brand-dark">
+    <section className="relative min-h-screen flex items-center pt-32 pb-20 overflow-hidden bg-brand-cream">
       {/* Background Texture */}
       <div className="absolute inset-0 opacity-20 pointer-events-none">
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
@@ -134,7 +134,7 @@ const Hero = () => {
             variants={container}
           >
             <motion.h1
-              className="text-5xl md:text-6xl font-serif font-bold leading-[1.2] mb-6 text-white flex flex-wrap"
+              className="text-5xl md:text-6xl font-serif font-bold leading-[1.2] mb-6 text-stone-900 flex flex-wrap"
             >
               {headline.split(" ").map((word, index) => (
                 <motion.span
@@ -154,7 +154,7 @@ const Hero = () => {
             </motion.h1>
             <motion.p
               variants={child}
-              className="text-base md:text-lg text-white/60 mb-8 max-w-md leading-relaxed"
+              className="text-base md:text-lg text-stone-900/60 mb-8 max-w-md leading-relaxed"
             >
               Experience gourmet dining crafted with passion, fresh ingredients, and unforgettable flavors.
             </motion.p>
@@ -179,7 +179,7 @@ const Hero = () => {
             transition={{ delay: 1, duration: 1 }}
             className="absolute top-1/4 -right-12 hidden xl:block"
           >
-            <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white/20">
+            <svg width="120" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-stone-900/20">
               <path d="M10 10C40 10 60 40 110 70" stroke="currentColor" strokeWidth="2" strokeDasharray="4 4" />
               <path d="M105 70L112 72L110 65" stroke="currentColor" strokeWidth="2" />
             </svg>
@@ -200,7 +200,7 @@ const Hero = () => {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 100, repeat: Infinity, ease: "linear" }}
-              className="relative z-10 w-full h-full rounded-full overflow-hidden border-[12px] border-white/5 shadow-2xl"
+              className="relative z-10 w-full h-full rounded-full overflow-hidden border-[12px] border-stone-900/5 shadow-2xl"
             >
               <img
                 src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&q=80&w=1000"
@@ -248,35 +248,35 @@ const HowItWorks = () => {
       icon: <Utensils size={32} />,
       title: "Discover",
       desc: "Browse verified local chefs in your neighborhood.",
-      color: "bg-white/5 text-brand-primary"
+      color: "bg-stone-900/5 text-brand-primary"
     },
     {
       icon: <Heart size={32} />,
       title: "Customize",
       desc: "Choose spice levels and portions just for you.",
-      color: "bg-white/5 text-brand-primary"
+      color: "bg-stone-900/5 text-brand-primary"
     },
     {
       icon: <ShieldCheck size={32} />,
       title: "Secure Pay",
       desc: "Fast checkout with military-grade encryption.",
-      color: "bg-white/5 text-brand-primary"
+      color: "bg-stone-900/5 text-brand-primary"
     },
     {
       icon: <ShoppingBag size={32} />,
       title: "Pick Up",
       desc: "Grab your meal fresh from a kitchen within 10km.",
-      color: "bg-white/5 text-brand-primary"
+      color: "bg-stone-900/5 text-brand-primary"
     }
   ];
 
   return (
-    <section className="py-32 bg-brand-dark/50 border-y border-white/5">
+    <section className="py-32 bg-brand-cream/50 border-y border-stone-900/5">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="text-center mb-20">
           <span className="text-brand-primary font-mono text-xs uppercase tracking-[0.3em] mb-4 block">The Process</span>
-          <h2 className="text-5xl font-serif font-bold text-white mb-6">The Self-Pickup Journey</h2>
-          <p className="text-white/40 max-w-2xl mx-auto">Simple, secure, and community-driven. We've streamlined every step to ensure you get the best home-cooked experience.</p>
+          <h2 className="text-5xl font-serif font-bold text-stone-900 mb-6">The Self-Pickup Journey</h2>
+          <p className="text-stone-500 max-w-2xl mx-auto">Simple, secure, and community-driven. We've streamlined every step to ensure you get the best home-cooked experience.</p>
         </div>
 
         <div className="grid md:grid-cols-4 gap-10">
@@ -292,8 +292,8 @@ const HowItWorks = () => {
               <div className={`w-20 h-20 ${step.color} rounded-3xl flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform`}>
                 {step.icon}
               </div>
-              <h3 className="text-2xl font-serif font-bold text-white mb-4">{step.title}</h3>
-              <p className="text-white/40 text-sm leading-relaxed">{step.desc}</p>
+              <h3 className="text-2xl font-serif font-bold text-stone-900 mb-4">{step.title}</h3>
+              <p className="text-stone-500 text-sm leading-relaxed">{step.desc}</p>
             </motion.div>
           ))}
         </div>
@@ -310,14 +310,14 @@ const Testimonials = () => {
   ];
 
   return (
-    <section className="py-32 bg-brand-dark/30">
+    <section className="py-32 bg-brand-cream/30">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="grid lg:grid-cols-2 gap-20 items-center">
           <div>
             <span className="text-brand-primary font-mono text-xs uppercase tracking-[0.3em] mb-4 block">Testimonials</span>
-            <h2 className="text-5xl font-serif font-bold text-white mb-8">What Our Community Says</h2>
-            <p className="text-white/40 mb-12 max-w-md">Hear from our satisfied foodies and local chefs who have joined the Kitchen Foods family.</p>
-            <button className="px-8 py-4 border border-white/10 rounded-full text-white font-bold hover:bg-white hover:text-black transition-all">
+            <h2 className="text-5xl font-serif font-bold text-stone-900 mb-8">What Our Community Says</h2>
+            <p className="text-stone-500 mb-12 max-w-md">Hear from our satisfied foodies and local chefs who have joined the Kitchen Foods family.</p>
+            <button className="px-8 py-4 border border-stone-900/10 rounded-full text-stone-900 font-bold hover:bg-stone-900 hover:text-white transition-all">
               Read All Stories
             </button>
           </div>
@@ -331,8 +331,8 @@ const Testimonials = () => {
               >
                 <img src={review.avatar} alt={review.name} className="w-16 h-16 rounded-2xl object-cover" />
                 <div>
-                  <p className="text-white/70 italic mb-4">"{review.text}"</p>
-                  <h4 className="text-white font-bold">{review.name}</h4>
+                  <p className="text-stone-900/70 italic mb-4">"{review.text}"</p>
+                  <h4 className="text-stone-900 font-bold">{review.name}</h4>
                   <p className="text-brand-primary text-xs font-mono uppercase tracking-widest">{review.role}</p>
                 </div>
               </motion.div>
@@ -393,7 +393,7 @@ const ImpactCounter = ({ stats }: { stats: Stats | null }) => {
 
 const Footer = () => {
   return (
-    <footer className="bg-stone-900 text-white py-16">
+    <footer className="bg-stone-900 text-stone-900 py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-4 gap-12 mb-12">
           <div className="col-span-2">
@@ -417,20 +417,20 @@ const Footer = () => {
           <div>
             <h4 className="font-bold mb-6">Platform</h4>
             <ul className="space-y-4 text-stone-400">
-              <li><a href="#" className="hover:text-white transition-colors">Find Chefs</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">How it Works</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Chef Verification</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Safety Standards</a></li>
+              <li><a href="#" className="hover:text-stone-900 transition-colors">Find Chefs</a></li>
+              <li><a href="#" className="hover:text-stone-900 transition-colors">How it Works</a></li>
+              <li><a href="#" className="hover:text-stone-900 transition-colors">Chef Verification</a></li>
+              <li><a href="#" className="hover:text-stone-900 transition-colors">Safety Standards</a></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-bold mb-6">Company</h4>
             <ul className="space-y-4 text-stone-400">
-              <li><a href="#" className="hover:text-white transition-colors">Our Story</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Impact Report</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Contact Us</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
+              <li><a href="#" className="hover:text-stone-900 transition-colors">Our Story</a></li>
+              <li><a href="#" className="hover:text-stone-900 transition-colors">Impact Report</a></li>
+              <li><a href="#" className="hover:text-stone-900 transition-colors">Contact Us</a></li>
+              <li><a href="#" className="hover:text-stone-900 transition-colors">Careers</a></li>
             </ul>
           </div>
         </div>
@@ -438,9 +438,9 @@ const Footer = () => {
         <div className="pt-12 border-t border-stone-800 flex flex-col md:flex-row justify-between items-center gap-6 text-stone-500 text-sm">
           <p>© 2026 Kitchen Foods. All rights reserved.</p>
           <div className="flex gap-8">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-white transition-colors">Cookie Policy</a>
+            <a href="#" className="hover:text-stone-900 transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-stone-900 transition-colors">Terms of Service</a>
+            <a href="#" className="hover:text-stone-900 transition-colors">Cookie Policy</a>
           </div>
         </div>
       </div>
@@ -454,7 +454,7 @@ const SplashScreen = () => {
       initial={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 1.1, filter: "blur(20px)" }}
       transition={{ duration: 1, ease: [0.43, 0.13, 0.23, 0.96] }}
-      className="fixed inset-0 z-[100] bg-brand-dark flex flex-col items-center justify-center overflow-hidden"
+      className="fixed inset-0 z-[100] bg-brand-cream flex flex-col items-center justify-center overflow-hidden"
     >
       <motion.div
         key="logo-reveal"
@@ -483,14 +483,14 @@ const SplashScreen = () => {
           transition={{ delay: 0.5 }}
           className="text-center"
         >
-          <h1 className="text-4xl font-serif font-bold tracking-tight text-white mb-2">Kitchen Foods</h1>
+          <h1 className="text-4xl font-serif font-bold tracking-tight text-stone-900 mb-2">Kitchen Foods</h1>
           <div className="flex items-center justify-center gap-2">
             <motion.div
               animate={{ scale: [1, 1.2, 1] }}
               transition={{ duration: 1.5, repeat: Infinity }}
               className="w-2 h-2 bg-brand-primary rounded-full"
             />
-            <p className="text-white/40 font-mono text-xs uppercase tracking-[0.3em]">Excellence Loading</p>
+            <p className="text-stone-500 font-mono text-xs uppercase tracking-[0.3em]">Excellence Loading</p>
           </div>
         </motion.div>
       </motion.div>

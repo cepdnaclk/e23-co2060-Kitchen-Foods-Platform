@@ -46,15 +46,15 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
     };
 
     return (
-        <div ref={formRef} className="glass rounded-[40px] border border-white/5 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-500 scroll-mt-24">
-            <div className="p-6 border-b border-white/5 flex items-center justify-between bg-white/5">
+        <div ref={formRef} className="glass rounded-[40px] border border-stone-900/5 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-8 duration-500 scroll-mt-24">
+            <div className="p-6 border-b border-stone-900/5 flex items-center justify-between bg-stone-900/5">
                 <div>
-                    <h2 className="text-2xl font-bold text-white">{category}</h2>
-                    <p className="text-white/40">Customize your order to your exact preferences</p>
+                    <h2 className="text-2xl font-bold text-stone-900">{category}</h2>
+                    <p className="text-stone-500">Customize your order to your exact preferences</p>
                 </div>
                 <button
                     onClick={onCancel}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white transition-colors font-medium"
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-stone-900/60 hover:bg-stone-900/10 hover:text-stone-900 transition-colors font-medium"
                 >
                     <X size={18} />
                     Cancel
@@ -67,22 +67,22 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
                     <div className="space-y-6">
                         {/* Portions */}
                         <div>
-                            <label className="block text-sm font-medium text-white/80 mb-2 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-stone-900/80 mb-2 flex items-center gap-2">
                                 <Users size={16} className="text-brand-primary" />
                                 Number of Portions
                             </label>
                             <div className="flex items-center gap-4">
                                 <button
                                     type="button"
-                                    className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:border-brand-primary hover:bg-white/5 transition-all text-xl text-white"
+                                    className="w-12 h-12 rounded-xl border border-stone-900/10 flex items-center justify-center hover:border-brand-primary hover:bg-stone-900/5 transition-all text-xl text-stone-900"
                                     onClick={() => setFormData(p => ({ ...p, portions: Math.max(1, p.portions - 1) }))}
                                 >
                                     -
                                 </button>
-                                <span className="text-2xl font-bold w-12 text-center text-white">{formData.portions}</span>
+                                <span className="text-2xl font-bold w-12 text-center text-stone-900">{formData.portions}</span>
                                 <button
                                     type="button"
-                                    className="w-12 h-12 rounded-xl border border-white/10 flex items-center justify-center hover:border-brand-primary hover:bg-white/5 transition-all text-xl text-white"
+                                    className="w-12 h-12 rounded-xl border border-stone-900/10 flex items-center justify-center hover:border-brand-primary hover:bg-stone-900/5 transition-all text-xl text-stone-900"
                                     onClick={() => setFormData(p => ({ ...p, portions: p.portions + 1 }))}
                                 >
                                     +
@@ -92,7 +92,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
 
                         {/* Spice Level */}
                         <div>
-                            <label className="block text-sm font-medium text-white/80 mb-4 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-stone-900/80 mb-4 flex items-center gap-2">
                                 <Flame size={16} className="text-brand-primary" />
                                 Spice Level
                             </label>
@@ -104,9 +104,9 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
                                     step="1"
                                     value={formData.spiceLevel}
                                     onChange={(e) => setFormData(p => ({ ...p, spiceLevel: parseInt(e.target.value) }))}
-                                    className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-brand-primary"
+                                    className="w-full h-2 bg-stone-900/10 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                                 />
-                                <div className="flex justify-between text-sm text-white/50 mt-3 font-medium">
+                                <div className="flex justify-between text-sm text-stone-600 mt-3 font-medium">
                                     <span className={formData.spiceLevel === 0 ? 'text-brand-primary font-bold' : ''}>Mild</span>
                                     <span className={formData.spiceLevel === 1 ? 'text-brand-primary font-bold' : ''}>Medium</span>
                                     <span className={formData.spiceLevel === 2 ? 'text-brand-primary font-bold' : ''}>Hot</span>
@@ -117,7 +117,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
 
                         {/* Dietary Restrictions */}
                         <div>
-                            <label className="block text-sm font-medium text-white/80 mb-2 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-stone-900/80 mb-2 flex items-center gap-2">
                                 <AlertCircle size={16} className="text-brand-primary" />
                                 Dietary Restrictions
                             </label>
@@ -126,7 +126,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
                                 placeholder="e.g. Gluten-free, Nut allergy..."
                                 value={formData.dietary}
                                 onChange={(e) => setFormData(p => ({ ...p, dietary: e.target.value }))}
-                                className="w-full px-4 py-3 bg-white/5 text-white placeholder-white/40 border border-white/10 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition-all"
+                                className="w-full px-4 py-3 bg-stone-900/5 text-stone-900 placeholder-stone-500 border border-stone-900/10 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition-all"
                             />
                         </div>
                     </div>
@@ -136,7 +136,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
                         {/* Date & Time */}
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-white/80 mb-2 flex items-center gap-2">
+                                <label className="block text-sm font-medium text-stone-900/80 mb-2 flex items-center gap-2">
                                     <Calendar size={16} className="text-brand-primary" />
                                     Date
                                 </label>
@@ -145,12 +145,12 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
                                     required
                                     value={formData.date}
                                     onChange={(e) => setFormData(p => ({ ...p, date: e.target.value }))}
-                                    className="w-full px-4 py-3 bg-white/5 text-white border border-white/10 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition-all"
+                                    className="w-full px-4 py-3 bg-stone-900/5 text-stone-900 border border-stone-900/10 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition-all"
                                     style={{ colorScheme: 'dark' }}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-white/80 mb-2 flex items-center gap-2">
+                                <label className="block text-sm font-medium text-stone-900/80 mb-2 flex items-center gap-2">
                                     <Clock size={16} className="text-brand-primary" />
                                     Time
                                 </label>
@@ -159,7 +159,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
                                     required
                                     value={formData.time}
                                     onChange={(e) => setFormData(p => ({ ...p, time: e.target.value }))}
-                                    className="w-full px-4 py-3 bg-white/5 text-white border border-white/10 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition-all"
+                                    className="w-full px-4 py-3 bg-stone-900/5 text-stone-900 border border-stone-900/10 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition-all"
                                     style={{ colorScheme: 'dark' }}
                                 />
                             </div>
@@ -167,29 +167,29 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
 
                         {/* Budget */}
                         <div>
-                            <label className="block text-sm font-medium text-white/80 mb-2 flex items-center gap-2">
+                            <label className="block text-sm font-medium text-stone-900/80 mb-2 flex items-center gap-2">
                                 <DollarSign size={16} className="text-brand-primary" />
                                 Budget (LKR)
                             </label>
-                            <div className="bg-white/5 p-4 rounded-xl border border-white/10">
+                            <div className="bg-stone-900/5 p-4 rounded-xl border border-stone-900/10">
                                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 justify-between">
-                                    <div className="flex bg-white/10 rounded-lg p-1 border border-white/5 shadow-sm w-fit">
+                                    <div className="flex bg-stone-900/10 rounded-lg p-1 border border-stone-900/5 shadow-sm w-fit">
                                         <button
                                             type="button"
                                             onClick={() => setFormData(p => ({ ...p, budgetType: 'slider' }))}
-                                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${formData.budgetType === 'slider' ? 'bg-brand-primary text-white shadow-sm' : 'text-white/50 hover:text-white'}`}
+                                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${formData.budgetType === 'slider' ? 'bg-brand-primary text-white shadow-sm' : 'text-stone-600 hover:text-stone-900'}`}
                                         >
                                             Slider
                                         </button>
                                         <button
                                             type="button"
                                             onClick={() => setFormData(p => ({ ...p, budgetType: 'manual' }))}
-                                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${formData.budgetType === 'manual' ? 'bg-brand-primary text-white shadow-sm' : 'text-white/50 hover:text-white'}`}
+                                            className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${formData.budgetType === 'manual' ? 'bg-brand-primary text-white shadow-sm' : 'text-stone-600 hover:text-stone-900'}`}
                                         >
                                             Manual Input
                                         </button>
                                     </div>
-                                    <div className="text-xl font-bold text-white whitespace-nowrap">
+                                    <div className="text-xl font-bold text-stone-900 whitespace-nowrap">
                                         LKR {formData.budget.toLocaleString()}
                                     </div>
                                 </div>
@@ -202,7 +202,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
                                         step="100"
                                         value={formData.budget}
                                         onChange={(e) => setFormData(p => ({ ...p, budget: parseInt(e.target.value) }))}
-                                        className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-brand-primary"
+                                        className="w-full h-2 bg-stone-900/20 rounded-lg appearance-none cursor-pointer accent-brand-primary"
                                     />
                                 ) : (
                                     <input
@@ -210,7 +210,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
                                         min="500"
                                         value={formData.budget}
                                         onChange={(e) => setFormData(p => ({ ...p, budget: parseInt(e.target.value) || 0 }))}
-                                        className="w-full px-4 py-2 border border-white/10 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none font-bold text-white bg-white/5"
+                                        className="w-full px-4 py-2 border border-stone-900/10 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none font-bold text-stone-900 bg-stone-900/5"
                                     />
                                 )}
                             </div>
@@ -218,7 +218,7 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
 
                         {/* Other Customizations */}
                         <div>
-                            <label className="block text-sm font-medium text-white/80 mb-2">
+                            <label className="block text-sm font-medium text-stone-900/80 mb-2">
                                 Other Customizations
                             </label>
                             <textarea
@@ -226,17 +226,17 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
                                 placeholder="Any specific preferences or instructions?"
                                 value={formData.customizations}
                                 onChange={(e) => setFormData(p => ({ ...p, customizations: e.target.value }))}
-                                className="w-full px-4 py-3 bg-white/5 text-white placeholder-white/40 border border-white/10 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none resize-none transition-all"
+                                className="w-full px-4 py-3 bg-stone-900/5 text-stone-900 placeholder-stone-500 border border-stone-900/10 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none resize-none transition-all"
                             />
                         </div>
                     </div>
                 </div>
 
-                <div className="pt-6 border-t border-white/5 flex justify-end gap-4">
+                <div className="pt-6 border-t border-stone-900/5 flex justify-end gap-4">
                     <button
                         type="button"
                         onClick={onCancel}
-                        className="px-6 py-3 border border-white/10 rounded-xl text-white/60 font-bold hover:bg-white/5 hover:text-white transition-colors cursor-pointer"
+                        className="px-6 py-3 border border-stone-900/10 rounded-xl text-stone-900/60 font-bold hover:bg-stone-900/5 hover:text-stone-900 transition-colors cursor-pointer"
                     >
                         Cancel
                     </button>

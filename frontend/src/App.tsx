@@ -13,7 +13,9 @@ import {
   ShoppingBag,
   ArrowRight
 } from 'lucide-react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { MenuCustomization } from './components/MenuCustomization';
+import { ImpactStory } from './pages/ImpactStory';
 
 // --- Types ---
 interface Stats {
@@ -26,19 +28,39 @@ interface Stats {
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, hash: string) => {
+    e.preventDefault();
+    setIsMenuOpen(false);
+
+    // If not on home page, navigate to home then scroll
+    if (location.pathname !== '/') {
+      navigate('/' + hash);
+    } else {
+      // If already on home page, just scroll smoothly
+      const element = document.querySelector(hash);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-brand-cream/80 backdrop-blur-md border-b border-stone-900/5">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex justify-between items-center h-20">
           <div className="flex items-center gap-2">
-            <span className="text-xl font-serif font-bold tracking-tight text-stone-900">Kitchen Foods</span>
+            <Link to="/" className="text-xl font-serif font-bold tracking-tight text-stone-900">Kitchen Foods</Link>
           </div>
 
           <div className="hidden md:flex items-center gap-10 text-sm font-medium text-stone-900/70">
-            {['Home', 'Menu', 'Chefs', 'About', 'Contact'].map((item) => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="hover:text-brand-primary transition-colors">{item}</a>
-            ))}
+            <Link to="/" className="hover:text-brand-primary transition-colors">Home</Link>
+            <a href="#menu" onClick={(e) => handleNavClick(e, '#menu')} className="hover:text-brand-primary transition-colors cursor-pointer">Menu</a>
+            <Link to="/impact" className="hover:text-brand-primary transition-colors">Chefs</Link>
+            <a href="#" className="hover:text-brand-primary transition-colors">About</a>
+            <a href="#" className="hover:text-brand-primary transition-colors">Contact</a>
           </div>
 
           <div className="flex items-center gap-4">
@@ -66,16 +88,9 @@ const Navbar = () => {
             className="md:hidden bg-brand-cream border-b border-stone-900/5 overflow-hidden"
           >
             <div className="px-6 py-8 flex flex-col gap-6">
-              {['Home', 'Menu', 'Chefs', 'About', 'Contact'].map((item) => (
-                <a
-                  key={item}
-                  href={`#${item.toLowerCase()}`}
-                  className="text-lg font-serif text-stone-900/70 hover:text-brand-primary"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item}
-                </a>
-              ))}
+              <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary">Home</Link>
+              <a href="#menu" onClick={(e) => handleNavClick(e, '#menu')} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary cursor-pointer">Menu</a>
+              <Link to="/impact" onClick={() => setIsMenuOpen(false)} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary">Chefs</Link>
               <button className="w-full py-4 bg-brand-primary text-white font-bold rounded-2xl">
                 Order Now
               </button>
@@ -417,9 +432,9 @@ const Footer = () => {
           <div>
             <h4 className="font-bold mb-6">Platform</h4>
             <ul className="space-y-4 text-stone-400">
-              <li><a href="#" className="hover:text-stone-900 transition-colors">Find Chefs</a></li>
+              <li><Link to="/impact" className="hover:text-stone-900 transition-colors">Find Chefs</Link></li>
+              <li><Link to="/impact" className="hover:text-stone-900 transition-colors">Our Impact</Link></li>
               <li><a href="#" className="hover:text-stone-900 transition-colors">How it Works</a></li>
-              <li><a href="#" className="hover:text-stone-900 transition-colors">Chef Verification</a></li>
               <li><a href="#" className="hover:text-stone-900 transition-colors">Safety Standards</a></li>
             </ul>
           </div>
@@ -498,6 +513,44 @@ const SplashScreen = () => {
   );
 };
 
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  // Handle scrolling when navigating to hash links
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      setTimeout(() => {
+        const element = document.querySelector(location.hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100); // small delay to ensure DOM has rendered before scrolling
+    }
+  }, [location]);
+
+  return (
+    <>
+      <Navbar />
+      <div className="min-h-screen">
+        {children}
+      </div>
+      <Footer />
+    </>
+  );
+};
+
+const Home = ({ stats }: { stats: Stats | null }) => {
+  return (
+    <>
+      <Hero />
+      <MenuCustomization />
+      <HowItWorks />
+      <Testimonials />
+      <ImpactCounter stats={stats} />
+    </>
+  );
+};
+
 export default function App() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -523,28 +576,29 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      <AnimatePresence>
-        {showSplash && <SplashScreen key="splash" />}
-      </AnimatePresence>
+    <Router>
+      <div className="min-h-screen">
+        <AnimatePresence>
+          {showSplash && <SplashScreen key="splash" />}
+        </AnimatePresence>
 
-      {!showSplash && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
-          animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
-          transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
-          className="min-h-screen"
-        >
-          <Navbar />
-          <Hero />
-          <MenuCustomization />
-          <HowItWorks />
-          <Testimonials />
-          <ImpactCounter stats={stats} />
-          <Footer />
-        </motion.div>
-      )}
-    </div>
+        {!showSplash && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, filter: "blur(10px)" }}
+            animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+            transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
+            className="min-h-screen"
+          >
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home stats={stats} />} />
+                <Route path="/impact" element={<ImpactStory />} />
+              </Routes>
+            </Layout>
+          </motion.div>
+        )}
+      </div>
+    </Router>
   );
 }
 

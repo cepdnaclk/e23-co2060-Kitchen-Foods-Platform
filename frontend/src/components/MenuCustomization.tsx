@@ -49,7 +49,7 @@ export const MenuCustomization: React.FC = () => {
     };
 
     return (
-        <section className="py-32 bg-brand-cream relative overflow-hidden text-stone-900 border-b border-stone-900/5">
+        <section id="menu" className="py-32 bg-brand-cream relative overflow-hidden text-stone-900 border-b border-stone-900/5">
             <div className="max-w-7xl mx-auto px-6 lg:px-12">
                 {/* Hero Section */}
                 <div className="text-center mb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">

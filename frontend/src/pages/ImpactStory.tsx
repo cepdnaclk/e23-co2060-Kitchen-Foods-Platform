@@ -1,8 +1,11 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Heart, Users, TrendingUp, ChefHat, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const ImpactStory: React.FC = () => {
+    const navigate = useNavigate();
+
     return (
         <div className="pt-32 pb-24 bg-brand-cream min-h-screen text-stone-900">
             {/* Header Section */}
@@ -138,7 +141,10 @@ export const ImpactStory: React.FC = () => {
                     <p className="text-white/60 mb-8 max-w-lg mx-auto relative z-10">
                         Help us grow our community. If you know a talented home cook looking to turn their passion into income, encourage them to apply.
                     </p>
-                    <button className="px-8 py-4 bg-brand-primary text-white rounded-full font-bold flex items-center gap-3 hover:shadow-2xl hover:shadow-brand-primary/40 transition-all group mx-auto relative z-10">
+                    <button
+                        onClick={() => navigate('/login')}
+                        className="px-8 py-4 bg-brand-primary text-white rounded-full font-bold flex items-center gap-3 hover:shadow-2xl hover:shadow-brand-primary/40 transition-all group mx-auto relative z-10"
+                    >
                         Become a Chef
                         <div className="w-7 h-7 bg-black rounded-full flex items-center justify-center">
                             <ArrowRight size={16} className="-rotate-45 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />

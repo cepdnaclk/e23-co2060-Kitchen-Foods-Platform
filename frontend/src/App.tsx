@@ -16,6 +16,7 @@ import {
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { MenuCustomization } from './components/MenuCustomization';
 import { ImpactStory } from './pages/ImpactStory';
+import { Login } from './pages/Login';
 
 // --- Types ---
 interface Stats {
@@ -31,7 +32,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleNavClick = (e: React.MouseEvent<HTMLAnchorElement>, hash: string) => {
+  const handleNavClick = (e: React.MouseEvent<HTMLElement>, hash: string) => {
     e.preventDefault();
     setIsMenuOpen(false);
 
@@ -59,12 +60,12 @@ const Navbar = () => {
             <Link to="/" className="hover:text-brand-primary transition-colors">Home</Link>
             <a href="#menu" onClick={(e) => handleNavClick(e, '#menu')} className="hover:text-brand-primary transition-colors cursor-pointer">Menu</a>
             <Link to="/impact" className="hover:text-brand-primary transition-colors">Chefs</Link>
-            <a href="#" className="hover:text-brand-primary transition-colors">About</a>
+            <a href="#how-it-works" onClick={(e) => handleNavClick(e, '#how-it-works')} className="hover:text-brand-primary transition-colors cursor-pointer">About</a>
             <a href="#" className="hover:text-brand-primary transition-colors">Contact</a>
           </div>
 
           <div className="flex items-center gap-4">
-            <button className="hidden sm:flex px-6 py-2.5 bg-brand-primary text-white text-sm font-bold rounded-full items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand-primary/20">
+            <button onClick={(e) => handleNavClick(e, '#menu')} className="hidden sm:flex px-6 py-2.5 bg-brand-primary text-white text-sm font-bold rounded-full items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand-primary/20">
               Order Now
             </button>
 
@@ -91,7 +92,8 @@ const Navbar = () => {
               <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary">Home</Link>
               <a href="#menu" onClick={(e) => handleNavClick(e, '#menu')} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary cursor-pointer">Menu</a>
               <Link to="/impact" onClick={() => setIsMenuOpen(false)} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary">Chefs</Link>
-              <button className="w-full py-4 bg-brand-primary text-white font-bold rounded-2xl">
+              <a href="#how-it-works" onClick={(e) => handleNavClick(e, '#how-it-works')} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary cursor-pointer">About</a>
+              <button onClick={(e) => handleNavClick(e, '#menu')} className="w-full py-4 bg-brand-primary text-white font-bold rounded-2xl">
                 Order Now
               </button>
             </div>
@@ -286,7 +288,7 @@ const HowItWorks = () => {
   ];
 
   return (
-    <section className="py-32 bg-brand-cream/50 border-y border-stone-900/5">
+    <section id="how-it-works" className="py-32 bg-brand-cream/50 border-y border-stone-900/5">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="text-center mb-20">
           <span className="text-brand-primary font-mono text-xs uppercase tracking-[0.3em] mb-4 block">The Process</span>
@@ -589,12 +591,14 @@ export default function App() {
             transition={{ duration: 1.2, ease: [0.43, 0.13, 0.23, 0.96] }}
             className="min-h-screen"
           >
-            <Layout>
-              <Routes>
-                <Route path="/" element={<Home stats={stats} />} />
-                <Route path="/impact" element={<ImpactStory />} />
-              </Routes>
-            </Layout>
+            <Routes>
+              {/* Routes with Navbar & Footer */}
+              <Route path="/" element={<Layout><Home stats={stats} /></Layout>} />
+              <Route path="/impact" element={<Layout><ImpactStory /></Layout>} />
+
+              {/* Standalone Route without Navbar/Footer */}
+              <Route path="/login" element={<Login />} />
+            </Routes>
           </motion.div>
         )}
       </div>

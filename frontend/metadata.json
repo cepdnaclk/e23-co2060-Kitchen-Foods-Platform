@@ -1,0 +1,5 @@
+{
+  "name": "Kitchen Foods",
+  "description": "A hyper-local platform connecting verified home chefs with locals for authentic, healthy, and affordable homemade meals.",
+  "requestFramePermissions": ["geolocation"]
+}

@@ -5,7 +5,6 @@ dotenv.config({ path: "./.env" });
 
 const { Pool } = pkg;
 
-// build config using dedicated env names and parse numeric port
 const pool = new Pool({
   user: process.env.DB_USER,
   host: process.env.DB_HOST,
@@ -15,7 +14,7 @@ const pool = new Pool({
 });
 
 pool.on("connect", () => {
-  console.log("Connection pool established successfully");
+  // console.log("Connection pool established successfully");
 });
 
 export default pool;

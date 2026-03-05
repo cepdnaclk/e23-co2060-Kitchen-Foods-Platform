@@ -1,0 +1,18 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: kitchen-foods-db
+
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+
+    ports:
+      - "${DB_PORT}:5432"
+
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d

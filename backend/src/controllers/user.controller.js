@@ -1,74 +1,34 @@
 import {
-  createUserService,
   getAllUsersService,
   getUserByIdService,
   updateUserByIdService,
   deleteUserByIdService,
-} from "../models/user.model.js";
+} from "../services/user.service.js";
 
-// standard controller file for user operations
-
-const handleRespnse = (res, status, message, data = null) => {
-  res.status(status).json({
-    status,
-    message,
-    data,
-  });
+export const getAllUsers = async (req, res) => {
+  const users = await getAllUsersService();
+  res.json(users);
 };
 
-export const createUser = async (req, res, next) => {
-  try {
-    const { name, email } = req.body;
-    const newUser = await createUserService(name, email);
-    handleRespnse(res, 201, "User created successfully", newUser);
-  } catch (err) {
-    next(err);
-  }
+export const getUserById = async (req, res) => {
+  const user = await getUserByIdService(req.params.uid);
+  if (!user) return res.status(404).json({ error: "User not found" });
+  res.json(user);
 };
 
-export const getAllUsers = async (req, res, next) => {
-  try {
-    const users = await getAllUsersService();
-    handleRespnse(res, 200, "Users retrieved successfully", users);
-  } catch (err) {
-    next(err);
-  }
+export const updateUser = async (req, res) => {
+  const user = await updateUserByIdService(
+    req.params.uid,
+    req.body.full_name,
+    req.body.email,
+    req.body.role,
+  );
+  if (!user) return res.status(404).json({ error: "User not found" });
+  res.json(user);
 };
 
-export const getUserById = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const user = await getUserByIdService(req.params.id);
-    if (!user) {
-      return handleRespnse(res, 404, "User not found");
-    }
-    handleRespnse(res, 200, "User retrieved successfully", user);
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const updateUser = async (req, res, next) => {
-  try {
-    const updatedUser = await updateUserByService(
-      req.params.id,
-      req.body.name,
-      req.body.email,
-    );
-    handleRespnse(res, 200, "User updated successfully", updatedUser);
-  } catch (err) {
-    next(err);
-  }
-};
-
-export const deleteUser = async (req, res, next) => {
-  try {
-    const deletedUser = await deleteUserByIdService(req.params.id);
-    if (!deletedUser) {
-      return handleRespnse(res, 404, "User not found");
-    }
-    handleRespnse(res, 200, "User deleted successfully", deletedUser);
-  } catch (err) {
-    next(err);
-  }
+export const deleteUser = async (req, res) => {
+  const user = await deleteUserByIdService(req.params.uid);
+  if (!user) return res.status(404).json({ error: "User not found" });
+  res.json({ message: "User deleted successfully" });
 };

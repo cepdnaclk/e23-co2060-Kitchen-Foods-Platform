@@ -1,4 +1,3 @@
-// src/controllers/auth.controller.js
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import {
@@ -40,7 +39,12 @@ export const userLogin = async (req, res) => {
     res.json({
       message: "Logged in successfully",
       token,
-      user: { uid: user.uid, full_name: user.full_name, role: user.role },
+      user: {
+        uid: user.uid,
+        full_name: user.full_name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (err) {
     console.error(err);

@@ -13,6 +13,7 @@ const pool = new Pool({
   port: process.env.DB_PORT,
 });
 
+// testing connection
 pool.on("connect", () => {
   // console.log("Connection pool established successfully");
 });

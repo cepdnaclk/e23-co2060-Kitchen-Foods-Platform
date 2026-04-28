@@ -7,6 +7,8 @@ import swaggerUi from "swagger-ui-express";
 import { errorHandler } from "./middlewares/errorHandler.js";
 import userRoutes from "./routes/user.routes.js";
 import authRoutes from "./routes/auth.routes.js";
+import adminRoutes from "./routes/admin.route.js";
+import foodRoutes from "./routes/food.routes.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -25,6 +27,8 @@ app.use(cors()); // enable cross origin requests
 // app.use("/api", userRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/food", foodRoutes);
 
 app.get("/api-docs/openapi.json", (req, res) => {
   res.sendFile(openApiFilePath);
@@ -40,9 +44,6 @@ app.use(
     explorer: true,
   }),
 );
-
-// Create tables on server start
-// createUserTable();
 
 // Error handling middleware - should be after all routes
 app.use(errorHandler);

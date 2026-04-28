@@ -41,6 +41,29 @@ CREATE TABLE IF NOT EXISTS transactions (
 );
 
 
+-- FOOD CATEGORIES TABLE (ADMIN MANAGEMENT)
+CREATE TABLE IF NOT EXISTS food_categories (
+    id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) UNIQUE NOT NULL,
+    description TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- FOOD ITEMS TABLE (ADMIN MANAGEMENT)
+CREATE TABLE IF NOT EXISTS food_items (
+    id VARCHAR(255) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+    chef_id VARCHAR(255) REFERENCES users(uid) ON DELETE SET NULL,
+    image_url TEXT NOT NULL,
+    category_id VARCHAR(255) NOT NULL REFERENCES food_categories(id) ON DELETE RESTRICT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
 -- Prevent chef quoting same order twice
 ALTER TABLE quotes
 ADD CONSTRAINT unique_quote UNIQUE (order_id, chef_id);

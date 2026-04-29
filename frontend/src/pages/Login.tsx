@@ -51,7 +51,12 @@ export const Login: React.FC = () => {
           localStorage.setItem("token", data.token);
           localStorage.setItem("user", JSON.stringify(data.user));
         }
-        navigate("/");
+
+        if (data.user?.role === "Chef") {
+          window.location.href = "http://localhost:3000";
+        } else {
+          navigate("/");
+        }
       } else {
         // After successful registration, switch to login view
         setIsLogin(true);

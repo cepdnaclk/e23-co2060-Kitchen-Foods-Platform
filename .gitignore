@@ -11,3 +11,4 @@
 
 # Ignore env files
 **/.env
+chef/.env.example

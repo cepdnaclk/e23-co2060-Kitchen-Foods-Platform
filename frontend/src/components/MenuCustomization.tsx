@@ -11,6 +11,7 @@ import {
   IceCream,
   Soup,
   CheckSquare,
+  ShoppingBag,
 } from "lucide-react";
 import type { FoodCategory, FoodItem, Request } from "../types";
 import { RequestForm } from "./RequestForm";
@@ -20,6 +21,9 @@ export const MenuCustomization: React.FC = () => {
   // Local state for requests since we don't have AppContext in MVP branch yet
   const [requests, setRequests] = useState<Request[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    null,
+  );
+  const [selectedFoodItem, setSelectedFoodItem] = useState<FoodItem | null>(
     null,
   );
   const [menuCategories, setMenuCategories] = useState<FoodCategory[]>([]);
@@ -98,11 +102,21 @@ export const MenuCustomization: React.FC = () => {
   );
 
   const handleCategoryClick = (categoryId: string) => {
-    setSelectedCategoryId(categoryId);
+    // Toggle: click same category again to close
+    if (selectedCategoryId === categoryId && !selectedFoodItem) {
+      setSelectedCategoryId(null);
+    } else {
+      setSelectedCategoryId(categoryId);
+      setSelectedFoodItem(null);
+    }
+  };
+
+  const handleFoodItemClick = (item: FoodItem) => {
+    setSelectedFoodItem(item);
   };
 
   const handleFormCancel = () => {
-    setSelectedCategoryId(null);
+    setSelectedFoodItem(null);
   };
 
   const handleFormSubmit = (data: Partial<Request>) => {
@@ -114,12 +128,13 @@ export const MenuCustomization: React.FC = () => {
       budget: data.budget || 0,
       status: "open",
       bids: 0,
-      location: "Current Location", // Defaulting for now
+      location: "Current Location",
       dietary: data.dietary || [],
       description: data.description || "",
     };
     setRequests((prev) => [newRequest, ...prev]);
     setSelectedCategoryId(null);
+    setSelectedFoodItem(null);
   };
 
   const handleRequestClick = (req: Request) => {
@@ -167,6 +182,8 @@ export const MenuCustomization: React.FC = () => {
                 color: "text-stone-500",
               };
               const Icon = style.icon;
+              const isActive = selectedCategoryId === cat.id;
+              const itemCount = (groupedMenuItems.get(cat.id) ?? []).length;
 
               return (
                 <button
@@ -174,7 +191,7 @@ export const MenuCustomization: React.FC = () => {
                   onClick={() => handleCategoryClick(cat.id)}
                   className={`flex flex-col items-center justify-center p-8 rounded-[32px] border transition-all duration-300 group cursor-pointer
                                 ${
-                                  selectedCategoryId === cat.id
+                                  isActive
                                     ? "bg-brand-primary border-brand-primary text-white shadow-2xl scale-105 z-10 shadow-brand-primary/20"
                                     : "glass border-stone-900/5 hover:border-brand-primary/50 text-stone-900/80 hover:text-stone-900"
                                 }
@@ -182,7 +199,7 @@ export const MenuCustomization: React.FC = () => {
                 >
                   <div
                     className={`w-16 h-16 rounded-full flex items-center justify-center mb-4 transition-transform ${
-                      selectedCategoryId === cat.id
+                      isActive
                         ? "bg-stone-900/20 text-stone-900"
                         : `bg-stone-900/5 ${style.color} group-hover:scale-110`
                     }`}
@@ -190,16 +207,118 @@ export const MenuCustomization: React.FC = () => {
                     <Icon size={28} />
                   </div>
                   <span className="font-bold font-serif">{cat.name}</span>
+                  {itemCount > 0 && (
+                    <span
+                      className={`mt-2 text-xs font-mono font-bold px-2 py-0.5 rounded-full ${
+                        isActive
+                          ? "bg-white/20 text-white"
+                          : "bg-stone-900/5 text-stone-500"
+                      }`}
+                    >
+                      {itemCount} {itemCount === 1 ? "item" : "items"}
+                    </span>
+                  )}
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Content Section: Toggle between Form and List */}
+        {/* Pop-out food items panel for the selected category */}
+        <AnimatePresence mode="wait">
+          {selectedCategoryId && !selectedFoodItem && (
+            <motion.div
+              key={`items-${selectedCategoryId}`}
+              initial={{ opacity: 0, height: 0, y: -20 }}
+              animate={{ opacity: 1, height: "auto", y: 0 }}
+              exit={{ opacity: 0, height: 0, y: -20 }}
+              transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+              className="overflow-hidden mb-16"
+            >
+              <div className="glass rounded-[40px] border border-brand-primary/20 p-8 md:p-10 shadow-2xl shadow-brand-primary/5">
+                {/* Category header */}
+                <div className="flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="text-2xl font-serif font-bold text-stone-900">
+                      {selectedCategory?.name}
+                    </h3>
+                    <p className="text-sm text-stone-600 mt-1">
+                      {selectedCategory?.description} — Tap an item to order.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setSelectedCategoryId(null)}
+                    className="text-sm font-bold text-stone-500 hover:text-brand-primary transition-colors px-4 py-2 rounded-full hover:bg-stone-900/5"
+                  >
+                    Close ✕
+                  </button>
+                </div>
+
+                {/* Items grid */}
+                {menuLoading ? (
+                  <div className="text-center py-12 text-stone-500 font-medium">
+                    Loading items...
+                  </div>
+                ) : menuError ? (
+                  <div className="text-center py-12 text-rose-500 font-medium">
+                    {menuError}
+                  </div>
+                ) : (groupedMenuItems.get(selectedCategoryId) ?? []).length === 0 ? (
+                  <div className="text-center py-12 text-stone-500 font-medium">
+                    No items found in this category.
+                  </div>
+                ) : (
+                  <div className="grid gap-5 md:grid-cols-2">
+                    {(groupedMenuItems.get(selectedCategoryId) ?? []).map(
+                      (item, idx) => (
+                        <motion.div
+                          key={item.id}
+                          initial={{ opacity: 0, y: 16 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.08, duration: 0.35 }}
+                          whileHover={{ y: -4, scale: 1.01 }}
+                          onClick={() => handleFoodItemClick(item)}
+                          className="flex gap-5 p-5 rounded-[24px] border border-stone-900/10 bg-white/60 hover:border-brand-primary/40 hover:shadow-xl hover:shadow-brand-primary/10 transition-all cursor-pointer group"
+                        >
+                          <img
+                            src={item.imageUrl}
+                            alt={item.name}
+                            className="h-24 w-24 rounded-2xl object-cover group-hover:scale-105 transition-transform flex-shrink-0"
+                            loading="lazy"
+                          />
+                          <div className="flex-1 flex flex-col justify-between min-w-0">
+                            <div>
+                              <h5 className="text-lg font-serif font-bold text-stone-900 group-hover:text-brand-primary transition-colors truncate">
+                                {item.name}
+                              </h5>
+                              <p className="text-sm text-stone-600 mt-0.5 line-clamp-2">
+                                {item.description}
+                              </p>
+                            </div>
+                            <div className="flex items-center justify-between mt-3">
+                              <span className="text-lg font-bold text-brand-primary">
+                                LKR {item.price.toLocaleString()}
+                              </span>
+                              <span className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary/10 text-brand-primary text-xs font-bold rounded-full group-hover:bg-brand-primary group-hover:text-white transition-all">
+                                <ShoppingBag size={14} />
+                                Select
+                              </span>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ),
+                    )}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Order form when a food item is selected */}
         <div className="min-h-[400px]">
           <AnimatePresence mode="wait">
-            {selectedCategory ? (
+            {selectedFoodItem && selectedCategory ? (
               <motion.div
                 key="form"
                 initial={{ opacity: 0, y: 20 }}
@@ -208,13 +327,38 @@ export const MenuCustomization: React.FC = () => {
                 transition={{ duration: 0.5 }}
                 className="max-w-4xl mx-auto"
               >
+                {/* Selected item summary */}
+                <div className="glass rounded-[28px] border border-brand-primary/20 p-5 mb-6 flex gap-5 items-center">
+                  <img
+                    src={selectedFoodItem.imageUrl}
+                    alt={selectedFoodItem.name}
+                    className="h-20 w-20 rounded-2xl object-cover flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-mono text-brand-primary uppercase tracking-widest mb-1">
+                      Selected Item
+                    </p>
+                    <h4 className="text-xl font-serif font-bold text-stone-900 truncate">
+                      {selectedFoodItem.name}
+                    </h4>
+                    <p className="text-sm text-stone-600">
+                      {selectedFoodItem.description}
+                    </p>
+                  </div>
+                  <div className="text-right flex-shrink-0">
+                    <span className="text-xl font-bold text-brand-primary">
+                      LKR {selectedFoodItem.price.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+
                 <RequestForm
                   category={selectedCategory.name}
                   onCancel={handleFormCancel}
                   onSubmit={handleFormSubmit}
                 />
               </motion.div>
-            ) : (
+            ) : !selectedFoodItem ? (
               <motion.div
                 key="list"
                 initial={{ opacity: 0 }}
@@ -222,80 +366,6 @@ export const MenuCustomization: React.FC = () => {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <div className="space-y-10">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-3xl font-serif font-bold text-stone-900">
-                      Explore the Menu
-                    </h3>
-                  </div>
-
-                  {menuLoading ? (
-                    <div className="text-center py-16 glass rounded-[40px] border border-dashed border-stone-900/20 text-stone-600">
-                      Loading menu items...
-                    </div>
-                  ) : menuError ? (
-                    <div className="text-center py-16 glass rounded-[40px] border border-dashed border-rose-200 text-rose-500">
-                      {menuError}
-                    </div>
-                  ) : (
-                    <div className="space-y-10">
-                      {menuCategories.map((category) => {
-                        const itemsForCategory =
-                          groupedMenuItems.get(category.id) ?? [];
-
-                        if (itemsForCategory.length === 0) {
-                          return null;
-                        }
-
-                        return (
-                          <div key={category.id} className="space-y-4">
-                            <div className="flex items-baseline justify-between">
-                              <div>
-                                <h4 className="text-2xl font-serif font-bold text-stone-900">
-                                  {category.name}
-                                </h4>
-                                <p className="text-sm text-stone-600">
-                                  {category.description}
-                                </p>
-                              </div>
-                            </div>
-                            <div className="grid gap-6 md:grid-cols-2">
-                              {itemsForCategory.map((item) => (
-                                <div
-                                  key={item.id}
-                                  className="glass rounded-[28px] border border-stone-900/10 p-6 flex gap-5"
-                                >
-                                  <img
-                                    src={item.imageUrl}
-                                    alt={item.name}
-                                    className="h-24 w-24 rounded-2xl object-cover"
-                                    loading="lazy"
-                                  />
-                                  <div className="flex-1">
-                                    <div className="flex items-start justify-between gap-4">
-                                      <div>
-                                        <h5 className="text-lg font-serif font-bold text-stone-900">
-                                          {item.name}
-                                        </h5>
-                                        <p className="text-sm text-stone-600">
-                                          {item.description}
-                                        </p>
-                                      </div>
-                                      <span className="text-sm font-semibold text-brand-primary">
-                                        LKR {item.price.toLocaleString()}
-                                      </span>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-
                 <div className="flex items-center justify-between mb-8">
                   <h3 className="text-3xl font-serif font-bold text-stone-900">
                     Your Active Requests
@@ -379,7 +449,7 @@ export const MenuCustomization: React.FC = () => {
                   )}
                 </div>
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
         </div>
       </div>

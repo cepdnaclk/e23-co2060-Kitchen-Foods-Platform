@@ -11,7 +11,8 @@ import {
   Star,
   Globe,
   ShoppingBag,
-  ArrowRight
+  ArrowRight,
+  LogOut
 } from 'lucide-react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { MenuCustomization } from './components/MenuCustomization';
@@ -29,8 +30,21 @@ interface Stats {
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsLoggedIn(!!token);
+  }, [location]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    navigate('/');
+  };
 
   const handleNavClick = (e: React.MouseEvent<HTMLElement>, hash: string) => {
     e.preventDefault();
@@ -65,9 +79,19 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            <Link to="/login" className="hidden sm:flex px-6 py-2.5 text-brand-primary border-2 border-brand-primary text-sm font-bold rounded-full items-center gap-2 hover:bg-brand-primary hover:text-white active:scale-95 transition-all">
-              Login / Sign Up
-            </Link>
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="hidden sm:flex px-6 py-2.5 text-red-500 border-2 border-red-500 text-sm font-bold rounded-full items-center gap-2 hover:bg-red-500 hover:text-white active:scale-95 transition-all"
+              >
+                <LogOut size={18} />
+                Logout
+              </button>
+            ) : (
+              <Link to="/login" className="hidden sm:flex px-6 py-2.5 text-brand-primary border-2 border-brand-primary text-sm font-bold rounded-full items-center gap-2 hover:bg-brand-primary hover:text-white active:scale-95 transition-all">
+                Login / Sign Up
+              </Link>
+            )}
             <button onClick={(e) => handleNavClick(e, '#menu')} className="hidden sm:flex px-6 py-2.5 bg-brand-primary text-white text-sm font-bold rounded-full items-center gap-2 hover:scale-105 active:scale-95 transition-all shadow-lg shadow-brand-primary/20">
               Order Now
             </button>
@@ -96,9 +120,21 @@ const Navbar = () => {
               <a href="#menu" onClick={(e) => handleNavClick(e, '#menu')} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary cursor-pointer">Menu</a>
               <Link to="/impact" onClick={() => setIsMenuOpen(false)} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary">Chefs</Link>
               <a href="#how-it-works" onClick={(e) => handleNavClick(e, '#how-it-works')} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary cursor-pointer">About</a>
-              <Link to="/login" onClick={() => setIsMenuOpen(false)} className="w-full py-4 border-2 border-brand-primary text-brand-primary text-center font-bold rounded-2xl">
-                Login / Sign Up
-              </Link>
+              
+              {isLoggedIn ? (
+                <button 
+                  onClick={() => { handleLogout(); setIsMenuOpen(false); }}
+                  className="w-full py-4 border-2 border-red-500 text-red-500 text-center font-bold rounded-2xl flex items-center justify-center gap-2"
+                >
+                  <LogOut size={20} />
+                  Logout
+                </button>
+              ) : (
+                <Link to="/login" onClick={() => setIsMenuOpen(false)} className="w-full py-4 border-2 border-brand-primary text-brand-primary text-center font-bold rounded-2xl">
+                  Login / Sign Up
+                </Link>
+              )}
+
               <button onClick={(e) => handleNavClick(e, '#menu')} className="w-full py-4 bg-brand-primary text-white font-bold rounded-2xl">
                 Order Now
               </button>
@@ -126,7 +162,7 @@ const Hero = () => {
       opacity: 1,
       y: 0,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         damping: 12,
         stiffness: 100,
       },
@@ -135,7 +171,7 @@ const Hero = () => {
       opacity: 0,
       y: 20,
       transition: {
-        type: "spring",
+        type: "spring" as const,
         damping: 12,
         stiffness: 100,
       },

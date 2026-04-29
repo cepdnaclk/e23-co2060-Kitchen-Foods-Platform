@@ -1,9 +1,10 @@
 -- USERS
 INSERT INTO users (uid, full_name, email, password_hash, role)
 VALUES
-('u1','testuser','alice@test.com','hashed_pw1','Customer'),
+('u1','Alice Customer','alice@test.com','hashed_pw1','Customer'),
+('u2','Bob Customer','bob@test.com','hashed_pw2','Customer'),
 ('u3','Chef Nimal','nimal@test.com','hashed_pw3','Chef'),
-('u5','Admin User','admin@test.com','hashed_pw5','Admin')
+('u4','Chef Kamala','kamala@test.com','hashed_pw4','Chef')
 ON CONFLICT (uid) DO NOTHING;
 
 

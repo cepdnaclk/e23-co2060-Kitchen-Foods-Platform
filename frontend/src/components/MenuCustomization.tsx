@@ -16,6 +16,7 @@ import {
 import type { FoodCategory, FoodItem, Request } from "../types";
 import { RequestForm } from "./RequestForm";
 import { motion, AnimatePresence } from "motion/react";
+import { mockFoodItems } from "../data/mockFoodItems";
 
 export const MenuCustomization: React.FC = () => {
   // Local state for requests since we don't have AppContext in MVP branch yet
@@ -56,7 +57,8 @@ export const MenuCustomization: React.FC = () => {
         ]);
 
         setMenuCategories(categoriesData);
-        setMenuItems(itemsData);
+        // Merge API items with mock items for frontend-only expansion
+        setMenuItems([...itemsData, ...mockFoodItems]);
       } catch (error) {
         console.error(error);
         setMenuError("Unable to load menu items. Please try again soon.");

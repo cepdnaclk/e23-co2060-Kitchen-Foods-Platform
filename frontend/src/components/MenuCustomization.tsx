@@ -70,6 +70,42 @@ export const MenuCustomization: React.FC = () => {
     void loadMenu();
   }, [API_BASE_URL]);
 
+  useEffect(() => {
+    const fetchCustomerOrders = async () => {
+      const userStr = localStorage.getItem("user");
+      if (!userStr) return;
+      
+      const user = JSON.parse(userStr);
+      try {
+        const response = await fetch(`${API_BASE_URL}/orders/customer/${user.uid}`);
+        if (!response.ok) throw new Error("Failed to fetch orders");
+        const data = await response.json();
+        
+        // Transform backend orders to frontend Request type
+        const transformedOrders: Request[] = data.map((o: any) => ({
+          id: o.id,
+          title: o.foodItemName || "Ordered Item",
+          date: o.deliveryDate ? o.deliveryDate.split('T')[0] : new Date(o.createdAt).toISOString().split('T')[0],
+          guests: o.quantity || 1,
+          budget: Number(o.totalPrice) || 0,
+          status: o.status === 'Pending' ? 'open' : (o.status === 'Completed' || o.status === 'Delivered' ? 'completed' : 'open'),
+          bids: 0,
+          location: "Colombo",
+          dietary: [],
+          description: `${o.mealDescription || ""} STATUS: ${o.status}`
+        }));
+        
+        setRequests(transformedOrders);
+      } catch (err) {
+        console.error("Error fetching customer orders:", err);
+      }
+    };
+
+    fetchCustomerOrders();
+    const interval = setInterval(fetchCustomerOrders, 30000); // Poll every 30 seconds
+    return () => clearInterval(interval);
+  }, [API_BASE_URL]);
+
   const categoryStyles = {
     "rice & curry": { icon: Soup, color: "text-orange-500" },
     "short eats": { icon: CheckSquare, color: "text-yellow-500" },
@@ -121,22 +157,62 @@ export const MenuCustomization: React.FC = () => {
     setSelectedFoodItem(null);
   };
 
-  const handleFormSubmit = (data: Partial<Request>) => {
-    const newRequest: Request = {
-      id: Math.random().toString(36).substr(2, 9),
-      title: data.title || "New Request",
-      date: data.date || new Date().toISOString().split("T")[0],
-      guests: data.guests || 1,
-      budget: data.budget || 0,
-      status: "open",
-      bids: 0,
-      location: "Current Location",
-      dietary: data.dietary || [],
-      description: data.description || "",
+  const handleFormSubmit = async (data: Partial<Request>) => {
+    const userStr = localStorage.getItem("user");
+    if (!userStr) {
+      alert("Please login to place an order");
+      return;
+    }
+
+    const user = JSON.parse(userStr);
+    
+    const orderPayload = {
+      customerId: user.uid,
+      chefId: selectedFoodItem?.chefId,
+      foodItemId: selectedFoodItem?.id,
+      quantity: data.guests || 1,
+      totalPrice: (selectedFoodItem?.price || 0) * (data.guests || 1),
+      deliveryDate: data.date,
+      deliveryTime: data.description?.match(/Time: (.*)/)?.[1]?.trim() || "ASAP",
+      mealDescription: data.description || `Order for ${selectedFoodItem?.name}`
     };
-    setRequests((prev) => [newRequest, ...prev]);
-    setSelectedCategoryId(null);
-    setSelectedFoodItem(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderPayload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to place order");
+      }
+
+      const newOrder = await response.json();
+      
+      const newRequest: Request = {
+        id: newOrder.id,
+        title: data.title || "New Request",
+        date: data.date || new Date().toISOString().split("T")[0],
+        guests: data.guests || 1,
+        budget: data.budget || 0,
+        status: "open",
+        bids: 0,
+        location: "Current Location",
+        dietary: data.dietary || [],
+        description: data.description || "",
+      };
+      setRequests((prev) => [newRequest, ...prev]);
+      setSelectedCategoryId(null);
+      setSelectedFoodItem(null);
+      alert("Order placed successfully!");
+    } catch (error: any) {
+      console.error("Error placing order:", error);
+      alert(`Failed to place order: ${error.message}`);
+    }
   };
 
   const handleRequestClick = (req: Request) => {
@@ -402,9 +478,9 @@ export const MenuCustomization: React.FC = () => {
                               </h4>
                               <span
                                 className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
-                                                        ${req.status === "open" ? "bg-green-500/20 text-green-400 border border-green-500/20" : "bg-stone-900/10 text-stone-900/60"}`}
+                                                        ${req.status === "completed" ? "bg-stone-900/10 text-stone-900/60" : "bg-green-500/20 text-green-400 border border-green-500/20"}`}
                               >
-                                {req.status}
+                                {req.description.includes("STATUS:") ? req.description.split("STATUS:")[1].trim() : req.status}
                               </span>
                             </div>
                             <div className="flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-stone-600 font-medium">

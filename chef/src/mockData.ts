@@ -2,6 +2,7 @@ import { Order, ChefStats, ChefProfile } from './types';
 import { subDays, format } from 'date-fns';
 
 export const mockChefProfile: ChefProfile = {
+  id: "u3",
   name: "Ranjan Ramanayake",
   specialty: "Traditional Sri Lankan Cuisine",
   avatar: "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?q=80&w=1000&auto=format&fit=crop",

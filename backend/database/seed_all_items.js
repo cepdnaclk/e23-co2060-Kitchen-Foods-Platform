@@ -1,0 +1,55 @@
+import pool from "../src/config/db.js";
+
+const mockFoodItems = [
+  { id: "m1", name: "Seafood Symphony Rice", description: "Prawns, cuttlefish, and crab curry served with red rice and seasonal veggies.", price: 1850, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1559847844-5315695dadae?auto=format&fit=crop&w=600&q=80", categoryId: "c1" },
+  { id: "m2", name: "Roasted Cashew Curry Feast", description: "Creamy cashew curry with pineapple, seeni sambol, and crispy papadam.", price: 1600, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80", categoryId: "c1" },
+  { id: "m3", name: "Jackfruit & Red Rice Special", description: "Tender young jackfruit curry (Polos) served with traditional red rice.", price: 1350, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=600&q=80", categoryId: "c1" },
+  { id: "m4", name: "Jaffna Mutton Curry Set", description: "Spicy northern style mutton curry with pittu, pol sambol, and dhal.", price: 2100, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1603894584214-41f36ed0459c?auto=format&fit=crop&w=600&q=80", categoryId: "c1" },
+  { id: "m5", name: "Golden Beef Patties", description: "Crispy pastries filled with spiced minced beef and potatoes.", price: 450, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1601050638917-3f309529d3bf?auto=format&fit=crop&w=600&q=80", categoryId: "c2" },
+  { id: "m6", name: "Spicy Vegetable Rotis", description: "Triangular flatbreads with a zesty vegetable filling and green chilies.", price: 350, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1626132646529-5003375a954e?auto=format&fit=crop&w=600&q=80", categoryId: "c2" },
+  { id: "m7", name: "Breaded Fish Cutlets", description: "Traditional spicy fish balls, crumbed and fried to perfection.", price: 400, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1598511726623-d345f4f89d31?auto=format&fit=crop&w=600&q=80", categoryId: "c2" },
+  { id: "m8", name: "Freshly Baked Egg Buns", description: "Soft buns with a whole boiled egg and caramelized onion relish.", price: 300, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=600&q=80", categoryId: "c2" },
+  { id: "m9", name: "Gotukola Sambol", description: "Fresh pennywort salad with shredded coconut, lime, and red onions.", price: 650, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=600&q=80", categoryId: "c3" },
+  { id: "m10", name: "Zesty Carrot & Cabbage Slaw", description: "Crunchy salad with a mustard-lime dressing and black pepper.", price: 550, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=600&q=80", categoryId: "c3" },
+  { id: "m11", name: "Beetroot & Onion Zest", description: "Sliced beetroot with red onions, green chilies, and lemon juice.", price: 600, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1590593162201-f67611a18b87?auto=format&fit=crop&w=600&q=80", categoryId: "c3" },
+  { id: "m12", name: "Tropical Fruit Salad", description: "Mix of seasonal fruits like papaya, mango, and pineapple with mint.", price: 800, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1490818387583-1baba5e6382b?auto=format&fit=crop&w=600&q=80", categoryId: "c3" },
+  { id: "m13", name: "Spiced Watalappan", description: "Steamed jaggery and coconut custard with cardamom and cashews.", price: 950, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=600&q=80", categoryId: "c4" },
+  { id: "m14", name: "Creamy Curd & Treacle", description: "Authentic buffalo curd served with thick kithul palm syrup.", price: 750, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1481391032119-d89fee407e44?auto=format&fit=crop&w=600&q=80", categoryId: "c4" },
+  { id: "m15", name: "Chocolate Biscuit Pudding", description: "Layered biscuits and rich dark chocolate ganache - a Sri Lankan favorite.", price: 850, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=600&q=80", categoryId: "c4" },
+  { id: "m16", name: "Bibikkan", description: "Traditional moist coconut cake with spices, treacle, and cashews.", price: 700, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1587314168485-3236dabb6311?auto=format&fit=crop&w=600&q=80", categoryId: "c4" },
+  { id: "m17", name: "Natural King Coconut", description: "Freshly harvested Thambili - nature's isotonic drink.", price: 250, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1525385354411-301f266f9a55?auto=format&fit=crop&w=600&q=80", categoryId: "c5" },
+  { id: "m18", name: "Rose Milk Faluda", description: "Refreshing drink with basil seeds, jelly, and a scoop of vanilla ice cream.", price: 650, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=600&q=80", categoryId: "c5" },
+  { id: "m19", name: "Woodapple Zest Juice", description: "Sweet and tangy juice made from native woodapple with coconut milk.", price: 500, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1563223552-30d01fda3eaa?auto=format&fit=crop&w=600&q=80", categoryId: "c5" },
+  { id: "m20", name: "Ceylon Ginger Milk Tea", description: "Strong black tea with fresh crushed ginger and creamy milk.", price: 350, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1544787210-2213d24269e8?auto=format&fit=crop&w=600&q=80", categoryId: "c5" },
+  { id: "m21", name: "Cheese & Onion Hoppers", description: "Crispy rice flour crepes with a savory melted cheese and onion topping.", price: 850, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&w=600&q=80", categoryId: "c6" },
+  { id: "m22", name: "String Hopper Biryani", description: "Spiced string hoppers tossed with chicken, egg, and garden peas.", price: 1550, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=600&q=80", categoryId: "c6" },
+  { id: "m23", name: "Dutch Burgher Lamprais", description: "Rice boiled in stock, wrapped in banana leaf with frikkadels and curries.", price: 2450, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=600&q=80", categoryId: "c6" },
+  { id: "m24", name: "Pittu with Coconut Milk", description: "Steamed rice and coconut cylinders served with sweetened coconut milk.", price: 900, chefId: "u3", imageUrl: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80", categoryId: "c6" },
+];
+
+const seedItems = async () => {
+  try {
+    console.log("Seeding all food items from mock data...");
+    for (const item of mockFoodItems) {
+      await pool.query(
+        `INSERT INTO food_items (id, name, description, price, chef_id, image_url, category_id)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)
+         ON CONFLICT (id) DO UPDATE SET
+           name = EXCLUDED.name,
+           description = EXCLUDED.description,
+           price = EXCLUDED.price,
+           chef_id = EXCLUDED.chef_id,
+           image_url = EXCLUDED.image_url,
+           category_id = EXCLUDED.category_id`,
+        [item.id, item.name, item.description, item.price, item.chefId, item.imageUrl, item.categoryId]
+      );
+    }
+    console.log("Seeding completed successfully!");
+    process.exit(0);
+  } catch (err) {
+    console.error("Error seeding items:", err);
+    process.exit(1);
+  }
+};
+
+seedItems();

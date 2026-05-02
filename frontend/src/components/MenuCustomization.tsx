@@ -56,7 +56,14 @@ export const MenuCustomization: React.FC = () => {
           itemsResponse.json(),
         ]);
 
-        setMenuCategories(categoriesData);
+        // Sort categories to ensure 'Other' is always the last option
+        const sortedCategories = categoriesData.sort((a: any, b: any) => {
+          if (a.name.toLowerCase() === 'other') return 1;
+          if (b.name.toLowerCase() === 'other') return -1;
+          return 0;
+        });
+
+        setMenuCategories(sortedCategories);
         // Use only mock items to ensure exactly 5 items per category
         setMenuItems(mockFoodItems);
       } catch (error) {

@@ -57,8 +57,8 @@ export const MenuCustomization: React.FC = () => {
         ]);
 
         setMenuCategories(categoriesData);
-        // Merge API items with mock items for frontend-only expansion
-        setMenuItems([...itemsData, ...mockFoodItems]);
+        // Use only mock items to ensure exactly 5 items per category
+        setMenuItems(mockFoodItems);
       } catch (error) {
         console.error(error);
         setMenuError("Unable to load menu items. Please try again soon.");

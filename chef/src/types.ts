@@ -19,6 +19,7 @@ export interface ChefStats {
 }
 
 export interface ChefProfile {
+  id: string;
   name: string;
   specialty: string;
   avatar: string;

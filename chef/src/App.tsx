@@ -30,7 +30,9 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export default function App() {
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [orders, setOrders] = useState<Order[]>(mockOrders);
   const [profile, setProfile] = useState(mockChefProfile);
   const [showToast, setShowToast] = useState(false);
@@ -44,6 +46,38 @@ export default function App() {
     setCurrentView('Dashboard');
     window.location.href = 'http://localhost:5173/';
   };
+
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        const response = await fetch(`http://localhost:8000/api/orders/chef/${profile.id}`);
+        if (!response.ok) throw new Error("Failed to fetch orders");
+        const data = await response.json();
+        
+        // Transform backend orders to match chef dashboard Order type
+        const transformedOrders: Order[] = data.map((o: any) => ({
+          id: o.id,
+          customerName: o.customerName || "Customer",
+          items: [{ name: o.foodItemName || "Ordered Item", quantity: o.quantity, price: o.totalPrice / o.quantity }],
+          total: Number(o.totalPrice),
+          status: o.status.toLowerCase(),
+          createdAt: o.createdAt,
+          deliveryTime: o.deliveryTime || "ASAP"
+        }));
+
+        setOrders(transformedOrders);
+      } catch (err) {
+        console.error("Error fetching orders:", err);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchOrders();
+      // Poll for new orders every 30 seconds
+      const interval = setInterval(fetchOrders, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [isLoggedIn, profile.id]);
 
   const handleProfileUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -60,10 +94,25 @@ export default function App() {
     setIsEditingProfile(false);
   };
 
-  const handleStatusChange = (id: string, status: Order['status']) => {
-    setOrders(prev => prev.map(order => 
-      order.id === id ? { ...order, status } : order
-    ));
+  const handleStatusChange = async (id: string, status: Order['status']) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/orders/${id}/status`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: status.charAt(0).toUpperCase() + status.slice(1) }),
+      });
+
+      if (!response.ok) throw new Error("Failed to update status");
+
+      setOrders(prev => prev.map(order => 
+        order.id === id ? { ...order, status } : order
+      ));
+    } catch (err) {
+      console.error("Error updating status:", err);
+      alert("Failed to update order status");
+    }
   };
 
   const simulateNewOrder = () => {
@@ -483,7 +532,60 @@ export default function App() {
     </div>
   );
 
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-md bg-white rounded-3xl p-8 shadow-2xl shadow-slate-200 border border-slate-100"
+        >
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-orange-500 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-orange-200 mx-auto mb-4">
+              <Utensils size={32} />
+            </div>
+            <h2 className="text-3xl font-display font-bold text-slate-900 tracking-tight">ChefDash</h2>
+            <p className="text-slate-500 font-medium">Welcome back, Chef!</p>
+          </div>
 
+          <form onSubmit={handleLogin} className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700">Email Address</label>
+              <input 
+                type="email" 
+                required
+                value={loginEmail}
+                onChange={(e) => setLoginEmail(e.target.value)}
+                placeholder="chef@example.com"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-bold text-slate-700">Password</label>
+              <input 
+                type="password" 
+                required
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                placeholder="••••••••"
+                className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all"
+              />
+            </div>
+            <button 
+              type="submit"
+              className="w-full py-4 bg-orange-500 text-white rounded-2xl font-bold hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 active:scale-95"
+            >
+              Sign In
+            </button>
+          </form>
+
+          <p className="mt-8 text-center text-sm text-slate-500">
+            Don't have an account? <button className="text-orange-600 font-bold hover:underline">Join the kitchen</button>
+          </p>
+        </motion.div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-slate-50 font-sans relative overflow-hidden">

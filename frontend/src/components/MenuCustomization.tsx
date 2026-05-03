@@ -215,7 +215,6 @@ export const MenuCustomization: React.FC = () => {
       setRequests((prev) => [newRequest, ...prev]);
       setSelectedCategoryId(null);
       setSelectedFoodItem(null);
-      alert("Order placed successfully!");
     } catch (error: any) {
       console.error("Error placing order:", error);
       alert(`Failed to place order: ${error.message}`);

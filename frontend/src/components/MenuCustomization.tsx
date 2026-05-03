@@ -12,6 +12,8 @@ import {
   Soup,
   CheckSquare,
   ShoppingBag,
+  Star,
+  Clock,
 } from "lucide-react";
 import type { FoodCategory, FoodItem, Request } from "../types";
 import { RequestForm } from "./RequestForm";
@@ -95,7 +97,7 @@ export const MenuCustomization: React.FC = () => {
           date: o.deliveryDate ? o.deliveryDate.split('T')[0] : new Date(o.createdAt).toISOString().split('T')[0],
           guests: o.quantity || 1,
           budget: Number(o.totalPrice) || 0,
-          status: o.status === 'Pending' ? 'open' : (o.status === 'Completed' || o.status === 'Delivered' ? 'completed' : 'open'),
+          status: o.status,
           bids: 0,
           location: "Colombo",
           dietary: [],
@@ -253,12 +255,37 @@ export const MenuCustomization: React.FC = () => {
               placeholder="Search for specific food items (e.g. String Hoppers, Lamprais)..."
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              className="w-full py-5 pl-14 pr-6 rounded-full glass border border-stone-900/10 shadow-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none text-lg transition-all text-stone-900 placeholder-stone-500"
+              className="w-full pl-16 pr-8 py-6 bg-white rounded-[32px] border border-stone-900/5 focus:outline-none focus:ring-4 focus:ring-brand-primary/10 focus:border-brand-primary/50 text-lg shadow-xl shadow-stone-900/5 transition-all"
             />
           </div>
 
+          {/* Quick Cravings Chips */}
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-16">
+            {["Spicy", "Vegetarian", "Seafood", "Healthy", "Rice", "Sweets"].map((craving) => (
+              <button
+                key={craving}
+                onClick={() => setSearchQuery(craving)}
+                className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all border
+                  ${searchQuery === craving 
+                    ? "bg-brand-primary border-brand-primary text-white shadow-lg shadow-brand-primary/20" 
+                    : "bg-white border-stone-900/5 text-stone-600 hover:border-brand-primary/30"
+                  }`}
+              >
+                {craving}
+              </button>
+            ))}
+            {searchQuery && (
+              <button 
+                onClick={() => setSearchQuery("")}
+                className="text-xs font-bold text-stone-400 hover:text-brand-primary ml-2"
+              >
+                Clear
+              </button>
+            )}
+          </div>
+
           {/* Categories */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="flex overflow-x-auto pb-8 gap-6 no-scrollbar md:grid md:grid-cols-3 lg:grid-cols-6 lg:overflow-visible">
             {menuCategories.map((cat) => {
               const normalizedName = cat.name.toLowerCase();
               const style = categoryStyles[normalizedName] ?? {
@@ -273,7 +300,7 @@ export const MenuCustomization: React.FC = () => {
                 <button
                   key={cat.id}
                   onClick={() => handleCategoryClick(cat.id)}
-                  className={`flex flex-col items-center justify-center p-8 rounded-[32px] border transition-all duration-300 group cursor-pointer
+                  className={`flex flex-col items-center justify-center p-8 rounded-[32px] border transition-all duration-300 group cursor-pointer flex-shrink-0 w-40 md:w-auto
                                 ${
                                   isActive
                                     ? "bg-brand-primary border-brand-primary text-white shadow-2xl scale-105 z-10 shadow-brand-primary/20"
@@ -362,8 +389,14 @@ export const MenuCustomization: React.FC = () => {
                           transition={{ delay: idx * 0.08, duration: 0.35 }}
                           whileHover={{ y: -4, scale: 1.01 }}
                           onClick={() => handleFoodItemClick(item)}
-                          className="flex gap-5 p-5 rounded-[24px] border border-stone-900/10 bg-white/60 hover:border-brand-primary/40 hover:shadow-xl hover:shadow-brand-primary/10 transition-all cursor-pointer group"
+                          className="flex gap-5 p-5 rounded-[24px] border border-stone-900/10 bg-white/60 hover:border-brand-primary/40 hover:shadow-xl hover:shadow-brand-primary/10 transition-all cursor-pointer group relative overflow-hidden"
                         >
+                          {/* Uber-style Badge */}
+                          {(idx === 0 || idx === 2) && (
+                            <div className="absolute top-0 right-0 bg-brand-primary text-white text-[10px] font-bold px-3 py-1 rounded-bl-2xl z-20">
+                              TOP RATED
+                            </div>
+                          )}
                           <img
                             src={item.imageUrl}
                             alt={item.name}
@@ -371,14 +404,26 @@ export const MenuCustomization: React.FC = () => {
                             loading="lazy"
                           />
                           <div className="flex-1 flex flex-col justify-between min-w-0">
-                            <div>
-                              <h5 className="text-lg font-serif font-bold text-stone-900 group-hover:text-brand-primary transition-colors truncate">
-                                {item.name}
-                              </h5>
-                              <p className="text-sm text-stone-600 mt-0.5 line-clamp-2">
-                                {item.description}
-                              </p>
-                            </div>
+                             <div>
+                               <div className="flex items-center gap-2 mb-1">
+                                 <h5 className="text-lg font-serif font-bold text-stone-900 group-hover:text-brand-primary transition-colors truncate">
+                                   {item.name}
+                                 </h5>
+                               </div>
+                               <p className="text-sm text-stone-600 line-clamp-2">
+                                 {item.description}
+                               </p>
+                               <div className="flex items-center gap-4 mt-3 text-[10px] font-bold uppercase tracking-widest text-stone-400">
+                                 <div className="flex items-center gap-1 text-brand-primary">
+                                   <Star size={12} className="fill-current" />
+                                   <span>{item.rating || "4.5"}</span>
+                                 </div>
+                                 <div className="flex items-center gap-1 border-l border-stone-200 pl-4">
+                                   <Clock size={12} />
+                                   <span>{item.prepTime || "20-30 min"}</span>
+                                 </div>
+                               </div>
+                             </div>
                             <div className="flex items-center justify-between mt-3">
                               <span className="text-lg font-bold text-brand-primary">
                                 LKR {item.price.toLocaleString()}
@@ -509,9 +554,32 @@ export const MenuCustomization: React.FC = () => {
                                   size={16}
                                   className="text-brand-primary"
                                 />
-                                {req.location}
                               </div>
                             </div>
+                            
+                            {/* Uber-style Progress Tracker */}
+                            {req.status !== 'Cancelled' && (
+                              <div className="mt-8">
+                                <div className="flex justify-between text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">
+                                  <span className={req.status === 'Pending' ? 'text-brand-primary' : ''}>Pending</span>
+                                  <span className={req.status === 'Preparing' ? 'text-brand-primary' : ''}>Preparing</span>
+                                  <span className={req.status === 'Ready' ? 'text-brand-primary' : ''}>Ready</span>
+                                  <span className={req.status === 'Delivered' || req.status === 'Completed' ? 'text-brand-primary' : ''}>Delivered</span>
+                                </div>
+                                <div className="h-1.5 w-full bg-stone-100 rounded-full overflow-hidden">
+                                  <motion.div 
+                                    initial={{ width: 0 }}
+                                    animate={{ 
+                                      width: req.status === 'Pending' ? '12.5%' : 
+                                             req.status === 'Preparing' ? '37.5%' : 
+                                             req.status === 'Ready' ? '62.5%' : 
+                                             req.status === 'Delivered' || req.status === 'Completed' ? '100%' : '0%' 
+                                    }}
+                                    className="h-full bg-brand-primary"
+                                  />
+                                </div>
+                              </div>
+                            )}
                           </div>
 
                           <div className="flex items-center gap-8 md:border-l md:border-stone-900/10 md:pl-8">

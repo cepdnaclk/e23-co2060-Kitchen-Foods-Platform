@@ -4,7 +4,7 @@ export interface Request {
     date: string;
     guests: number;
     budget: number;
-    status: 'open' | 'closed' | 'completed';
+    status: string;
     bids: number;
     location: string;
     dietary: string[];
@@ -26,4 +26,6 @@ export interface FoodItem {
     imageUrl: string;
     categoryId: string;
     categoryName: string;
+    rating?: number;
+    prepTime?: string;
 }

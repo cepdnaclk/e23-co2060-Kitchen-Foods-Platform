@@ -16,6 +16,9 @@ import {
 } from 'lucide-react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate, useLocation } from 'react-router-dom';
 import { MenuCustomization } from './components/MenuCustomization';
+import { InteractiveExtras } from './components/InteractiveExtras';
+import { PromoBanner } from './components/PromoBanner';
+import { Recommendations } from './components/Recommendations';
 import { ImpactStory } from './pages/ImpactStory';
 import { Login } from './pages/Login';
 
@@ -585,6 +588,8 @@ const Home = ({ stats }: { stats: Stats | null }) => {
   return (
     <>
       <Hero />
+      <PromoBanner />
+      <Recommendations />
       <MenuCustomization />
       <HowItWorks />
       <Testimonials />

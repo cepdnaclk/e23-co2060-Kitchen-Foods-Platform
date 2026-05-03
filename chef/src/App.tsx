@@ -579,15 +579,6 @@ export default function App() {
                 className="pl-10 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all w-64"
               />
             </div>
-            {currentView === 'Dashboard' && (
-              <button 
-                onClick={simulateNewOrder}
-                className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-xl font-bold text-sm hover:bg-orange-600 transition-all shadow-lg shadow-orange-200 active:scale-95"
-              >
-                <Plus size={18} />
-                Simulate Order
-              </button>
-            )}
             <button className="p-2 bg-white border border-slate-200 rounded-xl text-slate-500 hover:text-orange-500 hover:border-orange-200 transition-all relative">
               <Bell size={20} />
               <span className="absolute top-2 right-2 w-2 h-2 bg-orange-500 rounded-full border-2 border-white"></span>

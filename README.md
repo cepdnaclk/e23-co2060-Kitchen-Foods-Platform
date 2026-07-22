@@ -29,4 +29,6 @@ Configure the API URL in `frontend/.env`:
 ```
 VITE_API_BASE_URL=http://localhost:8000/api
 ```
+### Deployment
 
+The deployed site can be found at https://e23kitchenfood.up.railway.app/

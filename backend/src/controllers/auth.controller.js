@@ -10,7 +10,14 @@ export const userRegister = async (req, res) => {
     const { full_name, email, password, role } = req.body;
     const passwordHash = await bcrypt.hash(password, 10);
     const user = await createUserService(full_name, email, passwordHash, role);
-    res.status(201).json({ message: "User registered", user });
+
+    // Chefs are created in a "Pending" state and must be approved by an admin
+    // before they can sign in.
+    const message =
+      role === "Chef"
+        ? "Chef account created. It will be active once an admin approves your application."
+        : "User registered";
+    res.status(201).json({ message, user });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error during registration" });
@@ -30,6 +37,18 @@ export const userLogin = async (req, res) => {
     if (!isMatch)
       return res.status(401).json({ error: "Invalid email or password" });
 
+    // Chefs must be approved by an admin before they can access the system.
+    if (user.role === "Chef" && user.approval_status !== "Approved") {
+      if (user.approval_status === "Rejected") {
+        return res
+          .status(403)
+          .json({ error: "Your chef application was rejected. Please contact support." });
+      }
+      return res
+        .status(403)
+        .json({ error: "Your chef account is awaiting admin approval. Please try again later." });
+    }
+
     const token = jwt.sign(
       { id: user.uid, role: user.role },
       process.env.JWT_SECRET,
@@ -44,6 +63,7 @@ export const userLogin = async (req, res) => {
         full_name: user.full_name,
         email: user.email,
         role: user.role,
+        approval_status: user.approval_status,
       },
     });
   } catch (err) {

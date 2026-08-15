@@ -1,6 +1,7 @@
 import axios from 'axios'
 import type {
   ActivityEvent,
+  ChefApprovalStatus,
   DashboardStats,
   FoodCategory,
   FoodItem,
@@ -195,6 +196,12 @@ export const adminApi = {
   async deleteUser(userId: string) {
     // TODO: Wire up Axios call here (DELETE /users/:id)
     await instance.delete(`/users/${userId}`)
+  },
+
+  async updateChefApproval(userId: string, status: ChefApprovalStatus) {
+    const response = await instance.patch(`/chefs/${userId}/approval`, { status })
+
+    return response.data as User
   },
 
   async getFoodItems() {

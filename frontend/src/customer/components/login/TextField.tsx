@@ -34,13 +34,16 @@ export const TextField: React.FC<TextFieldProps> = ({
 }) => (
   <div>
     <label className="block text-sm font-bold text-stone-700 mb-2">{label}</label>
-    <div className="relative">
-      <Icon className="absolute left-4 top-3.5 text-stone-400" size={20} />
+    <div className="relative group">
+      <Icon
+        className="absolute left-4 top-1/2 -translate-y-1/2 text-stone-400 transition-colors group-focus-within:text-brand-primary"
+        size={20}
+      />
       <input
         type={type}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full pl-12 pr-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:ring-2 focus:ring-brand-primary focus:border-transparent outline-none transition-all text-stone-900 font-medium placeholder-stone-400"
+        className="w-full pl-12 pr-4 py-3.5 bg-white border border-stone-200 rounded-2xl focus:ring-2 focus:ring-brand-primary/40 focus:border-brand-primary outline-none transition-all text-stone-900 font-medium placeholder-stone-400 hover:border-stone-300"
         placeholder={placeholder}
         required={required}
         minLength={minLength}

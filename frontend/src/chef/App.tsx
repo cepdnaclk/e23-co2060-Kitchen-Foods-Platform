@@ -77,6 +77,20 @@ export default function App() {
     };
   });
 
+  // Chefs must be approved by an admin before using the app. The backend
+  // blocks their login while pending, but this also covers users who logged
+  // in before approval or whose status changed after login (stale JWTs).
+  const approvalStatus = (() => {
+    try {
+      const userObj = JSON.parse(localStorage.getItem("user") || "{}");
+      return userObj.approval_status;
+    } catch {
+      return undefined;
+    }
+  })();
+  const isApproved =
+    !approvalStatus || approvalStatus === "Approved";
+
   const [showToast, setShowToast] = useState(false);
   const [newOrderId, setNewOrderId] = useState('');
   const [activeTab, setActiveTab] = useState<'active' | 'completed'>('active');
@@ -834,6 +848,38 @@ export default function App() {
       </div>
     </div>
   );
+
+  // Show a status screen instead of the dashboard while the account is not approved.
+  if (!isApproved) {
+    const isRejected = approvalStatus === "Rejected";
+    return (
+      <div className="chef-dashboard flex min-h-screen items-center justify-center bg-slate-950 p-6">
+        <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-10 text-center shadow-2xl">
+          <div
+            className={`mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center ${
+              isRejected ? "bg-rose-500/10 text-rose-400" : "bg-amber-500/10 text-amber-400"
+            }`}
+          >
+            {isRejected ? <AlertTriangle size={28} /> : <Clock size={28} />}
+          </div>
+          <h1 className="text-xl font-display font-bold text-white tracking-tight mb-3">
+            {isRejected ? "Application Rejected" : "Awaiting Approval"}
+          </h1>
+          <p className="text-sm text-slate-400 leading-relaxed mb-8">
+            {isRejected
+              ? "Your chef application was rejected by an admin. Please contact support for more information."
+              : "Your chef account is pending admin approval. You'll be able to use the kitchen dashboard as soon as an admin approves your application."}
+          </p>
+          <button
+            onClick={handleLogout}
+            className="w-full py-3 bg-slate-800 border border-slate-700 text-slate-200 hover:text-white hover:border-slate-600 rounded-xl text-sm font-bold transition-all"
+          >
+            Back to Home
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="chef-dashboard flex min-h-screen relative overflow-hidden bg-slate-950">

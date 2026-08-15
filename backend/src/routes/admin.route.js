@@ -21,6 +21,9 @@ router.post("/users", adminController.createUser); // If admin adds a user manua
 router.put("/users/:id", adminController.updateUser);
 router.delete("/users/:id", adminController.removeUser);
 
+// --- Chef Approval ---
+router.patch("/chefs/:id/approval", adminController.updateChefApproval);
+
 // --- Food Item Management ---
 router.get("/food", adminController.getFood);
 router.post("/food", adminController.addFood);

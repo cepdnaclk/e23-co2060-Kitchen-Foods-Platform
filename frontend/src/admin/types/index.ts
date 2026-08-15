@@ -1,4 +1,5 @@
 export type UserRole = 'Admin' | 'Chef' | 'Customer'
+export type ChefApprovalStatus = 'Pending' | 'Approved' | 'Rejected'
 export type OrderStatus =
   | 'Pending'
   | 'Preparing'
@@ -18,6 +19,7 @@ export interface User {
   full_name: string
   email: string
   role: UserRole
+  approval_status?: ChefApprovalStatus | null
 }
 
 export interface FoodItem {

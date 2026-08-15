@@ -1,5 +1,4 @@
 import pool from "../config/db.js";
-import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 import { UPLOADS_DIR } from "../middlewares/upload.middleware.js";
@@ -91,7 +90,7 @@ class Food {
          image_url,
          category_id,
          (SELECT name FROM food_categories WHERE id = $6) AS category_name`,
-      [uuidv4(), name, description, price, chefId, imageUrl, categoryId],
+      [name, description, price, chefId, imageUrl, categoryId],
     );
 
     return Food.mapRow(result.rows[0]);

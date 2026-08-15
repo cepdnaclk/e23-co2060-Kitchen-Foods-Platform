@@ -16,4 +16,7 @@ export const createUserService = async (
 export const updateUserByIdService = async (uid, full_name, email, role) =>
   User.updateById(uid, full_name, email, role);
 
+export const updateApprovalStatusByIdService = async (uid, approvalStatus) =>
+  User.updateApprovalStatusById(uid, approvalStatus);
+
 export const deleteUserByIdService = async (uid) => User.deleteById(uid);

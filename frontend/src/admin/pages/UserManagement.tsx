@@ -1,9 +1,24 @@
 import { useEffect, useMemo, useState } from "react";
-import { FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiCheck, FiEdit2, FiPlus, FiTrash2, FiX } from "react-icons/fi";
 import { Modal } from "../components/ui/Modal.tsx";
 import { Table } from "../components/ui/Table.tsx";
 import { adminApi } from "../services/adminApi.ts";
-import type { User, UserRole } from "../types/index.ts";
+import type { ChefApprovalStatus, User, UserRole } from "../types/index.ts";
+
+const approvalBadge: Record<ChefApprovalStatus, { label: string; className: string }> = {
+  Pending: {
+    label: "Pending",
+    className: "bg-amber-100 text-amber-700 border-amber-200",
+  },
+  Approved: {
+    label: "Approved",
+    className: "bg-emerald-100 text-emerald-700 border-emerald-200",
+  },
+  Rejected: {
+    label: "Rejected",
+    className: "bg-rose-100 text-rose-700 border-rose-200",
+  },
+};
 
 const roleOptions: UserRole[] = ["Chef", "Customer", "Admin"];
 
@@ -60,6 +75,10 @@ export const UserManagement = () => {
   const admins = useMemo(
     () => users.filter((user) => user.role === "Admin"),
     [users],
+  );
+  const pendingChefs = useMemo(
+    () => chefs.filter((user) => user.approval_status === "Pending").length,
+    [chefs],
   );
 
   const openCreateModal = () => {
@@ -123,6 +142,29 @@ export const UserManagement = () => {
     }
   };
 
+  const handleApprovalChange = async (userId: string, status: ChefApprovalStatus) => {
+    const action = status === "Approved" ? "approve" : "reject";
+    const confirmed = window.confirm(
+      `Are you sure you want to ${action} this chef?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      const updated = await adminApi.updateChefApproval(userId, status);
+      setUsers((prev) =>
+        prev.map((user) => (user.uid === updated.uid ? updated : user)),
+      );
+    } catch (err: any) {
+      setError(
+        err.response?.data?.error ||
+          "Unable to update chef approval. Please try again.",
+      );
+    }
+  };
+
   const handleDelete = async (userId: string) => {
     const confirmed = window.confirm(
       "Are you sure you want to permanently delete this user?",
@@ -158,11 +200,48 @@ export const UserManagement = () => {
     },
     { key: "email", header: "Email", render: (row: User) => row.email },
     {
+      key: "approval_status",
+      header: "Status",
+      render: (row: User) => {
+        if (row.role !== "Chef" || !row.approval_status) {
+          return <span className="text-slate-400">—</span>;
+        }
+        const badge = approvalBadge[row.approval_status] ?? approvalBadge.Pending;
+        return (
+          <span
+            className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${badge.className}`}
+          >
+            {badge.label}
+          </span>
+        );
+      },
+    },
+    {
       key: "actions",
       header: "Actions",
-      className: "w-[120px]",
+      className: "w-[180px]",
       render: (row: User) => (
         <div className="flex items-center gap-2">
+          {row.role === "Chef" && row.approval_status === "Pending" && (
+            <>
+              <button
+                type="button"
+                title="Approve chef"
+                onClick={() => handleApprovalChange(row.uid, "Approved")}
+                className="rounded-lg border border-emerald-200 p-2 text-emerald-600 transition hover:bg-emerald-50"
+              >
+                <FiCheck />
+              </button>
+              <button
+                type="button"
+                title="Reject chef"
+                onClick={() => handleApprovalChange(row.uid, "Rejected")}
+                className="rounded-lg border border-rose-200 p-2 text-rose-600 transition hover:bg-rose-50"
+              >
+                <FiX />
+              </button>
+            </>
+          )}
           <button
             type="button"
             onClick={() => openEditModal(row)}
@@ -204,6 +283,15 @@ export const UserManagement = () => {
           <p className="text-sm text-slate-500">
             Manage chefs, customers, and administrators.
           </p>
+          {pendingChefs > 0 && (
+            <p className="mt-2 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500" />
+              </span>
+              {pendingChefs} chef{pendingChefs === 1 ? "" : "s"} awaiting approval
+            </p>
+          )}
           {fetchError ? (
             <p className="mt-2 text-sm text-rose-600">{fetchError}</p>
           ) : null}

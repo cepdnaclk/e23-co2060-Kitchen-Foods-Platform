@@ -15,7 +15,8 @@ CREATE TABLE IF NOT EXISTS chefs (
     email VARCHAR(255) UNIQUE NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) DEFAULT 'Chef' CHECK (role = 'Chef'),
-    profile_img_url VARCHAR(255)
+    profile_img_url VARCHAR(255),
+    approval_status VARCHAR(20) DEFAULT 'Pending' CHECK (approval_status IN ('Pending', 'Approved', 'Rejected'))
 );
 
 -- ADMIN TABLE

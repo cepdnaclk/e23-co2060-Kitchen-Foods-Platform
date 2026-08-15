@@ -12,6 +12,7 @@ import {
   getUsersService,
   removeFoodService,
   removeUserByAdminService,
+  updateChefApprovalService,
   updateFoodService,
   updateOrderStatusService,
   updateUserByAdminService,
@@ -133,6 +134,23 @@ const removeUser = async (req, res, next) => {
   }
 };
 
+const updateChefApproval = async (req, res, next) => {
+  try {
+    const { status } = req.body;
+    if (!status) {
+      return res.status(400).json({ error: "status is required" });
+    }
+    const chef = await updateChefApprovalService(req.params.id, status);
+    if (!chef) return res.status(404).json({ error: "Chef not found" });
+    res.json(chef);
+  } catch (err) {
+    if (err.statusCode) {
+      return res.status(err.statusCode).json({ error: err.message });
+    }
+    next(err);
+  }
+};
+
 const getFood = async (req, res, next) => {
   try {
     const items = await getFoodService();
@@ -240,6 +258,7 @@ export default {
   createUser,
   updateUser,
   removeUser,
+  updateChefApproval,
   getFood,
   addFood,
   updateFood,

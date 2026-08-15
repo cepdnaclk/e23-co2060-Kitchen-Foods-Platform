@@ -6,22 +6,26 @@ import {
   deleteUserByIdService,
   getAllUsersService,
   getUserByEmailService,
+  updateApprovalStatusByIdService,
   updateUserByIdService,
 } from "./user.service.js";
 
 const VALID_ORDER_STATUSES = new Set(["Pending", "Preparing", "Ready", "Delivered", "Cancelled", "Quoted", "Paid", "Completed"]);
 
 export const getStatsService = async () => {
-  const [userCount, chefCount, orderCount, foodCount] = await Promise.all([
-    pool.query("SELECT (SELECT COUNT(*)::int FROM users) + (SELECT COUNT(*)::int FROM chefs) + (SELECT COUNT(*)::int FROM admin) AS count"),
-    pool.query("SELECT COUNT(*)::int AS count FROM chefs"),
-    pool.query("SELECT COUNT(*)::int AS count FROM orders"),
-    pool.query("SELECT COUNT(*)::int AS count FROM food_items"),
-  ]);
+  const [userCount, chefCount, pendingChefCount, orderCount, foodCount] =
+    await Promise.all([
+      pool.query("SELECT (SELECT COUNT(*)::int FROM users) + (SELECT COUNT(*)::int FROM chefs) + (SELECT COUNT(*)::int FROM admin) AS count"),
+      pool.query("SELECT COUNT(*)::int AS count FROM chefs"),
+      pool.query("SELECT COUNT(*)::int AS count FROM chefs WHERE approval_status = 'Pending'"),
+      pool.query("SELECT COUNT(*)::int AS count FROM orders"),
+      pool.query("SELECT COUNT(*)::int AS count FROM food_items"),
+    ]);
 
   return {
     totalUsers: userCount.rows[0].count,
     activeChefs: chefCount.rows[0].count,
+    pendingChefs: pendingChefCount.rows[0].count,
     totalOrders: orderCount.rows[0].count,
     totalFoodItems: foodCount.rows[0].count,
   };
@@ -80,6 +84,15 @@ export const createUserByAdminService = async ({
 
 export const updateUserByAdminService = async (id, { full_name, email, role }) =>
   updateUserByIdService(id, full_name, email, role);
+
+export const updateChefApprovalService = async (id, status) => {
+  if (!["Approved", "Rejected"].includes(status)) {
+    const err = new Error("Invalid approval status");
+    err.statusCode = 400;
+    throw err;
+  }
+  return updateApprovalStatusByIdService(id, status);
+};
 
 export const removeUserByAdminService = async (id) => deleteUserByIdService(id);
 

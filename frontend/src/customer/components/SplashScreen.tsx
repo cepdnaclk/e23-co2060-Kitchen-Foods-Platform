@@ -1,16 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import {
-  motion,
-  animate,
-  useMotionValue,
-  useTransform,
-  useMotionValueEvent,
-} from 'motion/react';
+import React from 'react';
+import { motion } from 'motion/react';
 import { ChefHat } from 'lucide-react';
 
 const TITLE = 'Kitchen Foods';
 const TAGLINE = 'Excellence Loading';
-const SUBTITLE = 'Preparing your feast';
 
 const PARTICLES = [
   { top: '16%', left: '20%', size: 5, delay: 0 },
@@ -24,22 +17,6 @@ const PARTICLES = [
 ];
 
 export const SplashScreen: React.FC = () => {
-  const progress = useMotionValue(0);
-  const barWidth = useTransform(progress, (v) => `${v}%`);
-  const [percent, setPercent] = useState(0);
-
-  useEffect(() => {
-    const controls = animate(progress, 100, {
-      duration: 2.4,
-      ease: [0.22, 1, 0.36, 1],
-    });
-    return () => controls.stop();
-  }, [progress]);
-
-  useMotionValueEvent(progress, 'change', (v) => {
-    setPercent(Math.round(v));
-  });
-
   return (
     <motion.div
       initial={{ opacity: 1 }}
@@ -47,30 +24,30 @@ export const SplashScreen: React.FC = () => {
       transition={{ duration: 1, ease: [0.43, 0.13, 0.23, 0.96] }}
       role="status"
       aria-label="Loading Kitchen Foods"
-      className="fixed inset-0 z-[100] bg-brand-dark flex flex-col items-center justify-center overflow-hidden select-none"
+      className="fixed inset-0 z-[100] bg-brand-cream flex flex-col items-center justify-center overflow-hidden select-none"
     >
       {/* --- Ambient background --- */}
-      <div className="absolute -top-44 -left-44 h-[36rem] w-[36rem] rounded-full bg-brand-primary/10 blur-3xl" />
-      <div className="absolute -bottom-52 -right-40 h-[32rem] w-[32rem] rounded-full bg-amber-600/10 blur-3xl" />
+      <div className="absolute -top-44 -left-44 h-[36rem] w-[36rem] rounded-full bg-brand-primary/15 blur-3xl" />
+      <div className="absolute -bottom-52 -right-40 h-[32rem] w-[32rem] rounded-full bg-amber-300/20 blur-3xl" />
       <div
-        className="absolute inset-0 opacity-[0.05]"
+        className="absolute inset-0 opacity-[0.06]"
         style={{
-          backgroundImage: 'radial-gradient(rgba(255,255,255,0.8) 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(rgba(10,10,10,0.8) 1px, transparent 1px)',
           backgroundSize: '30px 30px',
         }}
       />
       <div
         className="absolute inset-0"
-        style={{ background: 'radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.45) 100%)' }}
+        style={{ background: 'radial-gradient(ellipse at center, rgba(255,255,255,0.6) 0%, transparent 60%)' }}
       />
 
       {/* --- Floating particles --- */}
       {PARTICLES.map((p, i) => (
         <motion.span
           key={i}
-          className="absolute rounded-full bg-amber-300/70"
+          className="absolute rounded-full bg-brand-primary/60"
           style={{ top: p.top, left: p.left, width: p.size, height: p.size }}
-          animate={{ y: [0, -18, 0], opacity: [0.1, 0.55, 0.1] }}
+          animate={{ y: [0, -18, 0], opacity: [0.1, 0.5, 0.1] }}
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: p.delay }}
         />
       ))}
@@ -86,16 +63,16 @@ export const SplashScreen: React.FC = () => {
         >
           {/* soft breathing glow */}
           <motion.div
-            animate={{ scale: [1, 1.15, 1], opacity: [0.45, 0.8, 0.45] }}
+            animate={{ scale: [1, 1.15, 1], opacity: [0.4, 0.7, 0.4] }}
             transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute -inset-8 rounded-full bg-brand-primary/30 blur-2xl"
+            className="absolute -inset-8 rounded-full bg-brand-primary/25 blur-2xl"
           />
 
           {/* slow counter-rotating dashed ring */}
           <motion.div
             animate={{ rotate: -360 }}
             transition={{ duration: 24, repeat: Infinity, ease: 'linear' }}
-            className="absolute -inset-10 rounded-full border border-dashed border-white/10"
+            className="absolute -inset-10 rounded-full border border-dashed border-brand-primary/25"
           />
 
           {/* orbiting arc + comet */}
@@ -107,7 +84,7 @@ export const SplashScreen: React.FC = () => {
             <div
               className="absolute inset-0 rounded-full"
               style={{
-                background: 'conic-gradient(from 0deg, transparent 0deg, rgba(242,125,38,0.9) 28deg, transparent 70deg)',
+                background: 'conic-gradient(from 0deg, transparent 0deg, rgba(242,125,38,0.85) 28deg, transparent 70deg)',
                 WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px))',
                 mask: 'radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1px))',
               }}
@@ -115,7 +92,7 @@ export const SplashScreen: React.FC = () => {
             <motion.div
               animate={{ scale: [1, 1.6, 1], opacity: [0.9, 0.4, 0.9] }}
               transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute -top-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-amber-300 shadow-[0_0_12px_rgba(252,211,77,0.9)]"
+              className="absolute -top-1 left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-brand-primary shadow-[0_0_12px_rgba(242,125,38,0.6)]"
             />
           </motion.div>
 
@@ -138,7 +115,7 @@ export const SplashScreen: React.FC = () => {
               initial={{ opacity: 0, y: 26, filter: 'blur(10px)' }}
               animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
               transition={{ delay: 0.35 + i * 0.055, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className={`inline-block ${i < 7 ? 'text-stone-100' : 'text-brand-primary text-glow'}`}
+              className={`inline-block ${i < 7 ? 'text-stone-900' : 'text-brand-primary text-glow'}`}
             >
               {char === ' ' ? '\u00A0' : char}
             </motion.span>
@@ -155,7 +132,7 @@ export const SplashScreen: React.FC = () => {
 
         {/* tagline + animated dots */}
         <div className="mt-5 flex items-center gap-3">
-          <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-stone-400">{TAGLINE}</p>
+          <p className="font-mono text-[11px] uppercase tracking-[0.35em] text-stone-500">{TAGLINE}</p>
           <div className="flex items-end gap-1 pb-0.5">
             {[0, 1, 2].map((i) => (
               <motion.span
@@ -165,20 +142,6 @@ export const SplashScreen: React.FC = () => {
                 className="h-1 w-1 rounded-full bg-brand-primary"
               />
             ))}
-          </div>
-        </div>
-
-        {/* progress bar + percentage */}
-        <div className="mt-12 w-72">
-          <div className="mb-3 flex items-center justify-between">
-            <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-stone-500">{SUBTITLE}</p>
-            <p className="font-mono text-xs text-amber-300 tabular-nums">{percent}%</p>
-          </div>
-          <div className="relative h-[3px] overflow-hidden rounded-full bg-white/10">
-            <motion.div
-              style={{ width: barWidth }}
-              className="absolute inset-y-0 left-0 rounded-full bg-gradient-to-r from-brand-primary via-amber-400 to-amber-200"
-            />
           </div>
         </div>
       </div>

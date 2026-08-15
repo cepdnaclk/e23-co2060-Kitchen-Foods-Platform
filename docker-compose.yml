@@ -55,6 +55,24 @@ services:
     depends_on:
       - backend
 
+  # One-shot runner: executes backend/ JS scripts (e.g. seeding test users)
+  # against the DB after postgres is healthy. The script to run is chosen by
+  # up.sh via `docker compose run --rm seed node <script>.js`.
+  seed:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DB_USER: ${DB_USER:-postgres}
+      DB_HOST: postgres
+      DB_NAME: ${DB_NAME:-kitchen-foods}
+      DB_PORT: 5432
+      DB_PASSWORD: ${DB_PASSWORD:-zoom119}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
 volumes:
   pgdata:
   uploads-data:

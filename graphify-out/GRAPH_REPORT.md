@@ -1,162 +1,170 @@
-# Graph Report - .  (2026-08-04)
+# Graph Report - .  (2026-08-15)
 
 ## Corpus Check
-- Corpus is ~48,072 words - fits in a single context window. You may not need a graph.
+- 61 files · ~53,941 words
+- Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 463 nodes · 689 edges · 31 communities (25 shown, 6 thin omitted)
-- Extraction: 91% EXTRACTED · 8% INFERRED · 1% AMBIGUOUS · INFERRED: 52 edges (avg confidence: 0.74)
+- 587 nodes · 954 edges · 33 communities (26 shown, 7 thin omitted)
+- Extraction: 94% EXTRACTED · 5% INFERRED · 1% AMBIGUOUS · INFERRED: 51 edges (avg confidence: 0.73)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- React UI Component Library
-- Admin Auth & CRUD API
-- Customer Home Experience
-- Chef Earnings & Food Items
-- Backend Dependency Stack
-- Database & Order Management
-- DB Init & User Management
-- Admin Dashboard UI
-- Frontend Build Tooling
-- Shared HTTP Client Deps
-- API Contract & Deployment
-- TypeScript Compiler Config
-- Public Food & Category API
-- Site Layout & Navigation
-- REST Endpoint Spec
-- Test Data Seed Script
+- Admin App Shell
+- Customer Menu Components
+- Admin API Controllers
+- Chef App Interface
+- Backend Init & Food API
+- Customer Landing Pages
+- Backend Dependencies
+- Database Access Layer
+- Frontend Tooling
+- Frontend Dependencies
+- Request Form Fields
+- TypeScript Configuration
+- REST Endpoint Docs
+- API Docs & Vision
+- Login UI Components
+- Shared Layout Components
 - Logo & Brand Identity
-- Docs Build Script
-- Admin Brand Icon Assets
+- Craving Search UI
+- Test User Seeding
+- Light Mode Script
+- React Brand Assets
 - Chef Impact Imagery
-- Chef Persona & Marketing
-- Chef Logo Branding
-- Aunty Kamala Persona
-- Docs Sample Image
-- Customer Dish Photo
-- Marketing Dish Photo
-- Admin Dashboard Hero
-- Vite Build Tool Logo
+- Chef Marketing Assets
+- Customer Persona Image
+- Docs Placeholder Images
+- Food Photo Assets
+- Dish Photography
+- Admin Dashboard Assets
+- Vite Branding
+- Code Placeholder
 
 ## God Nodes (most connected - your core abstractions)
 1. `compilerOptions` - 14 edges
-2. `Food` - 10 edges
-3. `Order` - 10 edges
-4. `User` - 9 edges
-5. `useAuth()` - 9 edges
-6. `pool` - 8 edges
-7. `Kitchen Food Platform Project Page` - 8 edges
-8. `getUserByEmailService()` - 7 edges
-9. `adminApi` - 7 edges
-10. `Order` - 6 edges
+2. `FoodItem` - 14 edges
+3. `Kitchen Foods Backend API Reference` - 13 edges
+4. `Request` - 12 edges
+5. `Order` - 10 edges
+6. `Food` - 10 edges
+7. `User` - 9 edges
+8. `useAuth()` - 9 edges
+9. `FoodCategory` - 9 edges
+10. `JWT Bearer Token Authentication` - 9 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Kitchen Food Platform Project Page` --semantically_similar_to--> `Kitchen Foods`  [INFERRED] [semantically similar]
   docs/README.md → README.md
 - `Hyper-Local Digital Food Platform` --semantically_similar_to--> `Hyper-Local Digital Marketplace`  [INFERRED] [semantically similar]
   README.md → docs/README.md
+- `JWT Bearer Token Authentication` --shares_data_with--> `JWT_SECRET Configuration`  [INFERRED]
+  backend/docs/API_REFERENCE.md → docker-compose.yml
 - `/src/main.tsx Entry Point` --references--> `Frontend Merged App`  [INFERRED]
   frontend/index.html → README.md
-- `Backend API Reference Document` --references--> `PostgreSQL 16 Service`  [INFERRED]
-  backend/README.md → docker-compose.yml
-- `Backend` --references--> `Backend API Reference Document`  [EXTRACTED]
-  README.md → backend/README.md
+- `Kitchen Foods Backend API Reference` --conceptually_related_to--> `Backend Service`  [INFERRED]
+  backend/docs/API_REFERENCE.md → docker-compose.yml
 
 ## Import Cycles
 - None detected.
 
 ## Hyperedges (group relationships)
-- **User CRUD Endpoint Flow** — backend_docs_api_reference_register_endpoint, backend_docs_api_reference_login_endpoint, backend_docs_api_reference_get_all_users, backend_docs_api_reference_get_user_by_id, backend_docs_api_reference_update_user, backend_docs_api_reference_delete_user [INFERRED 0.85]
-- **Docker Compose Deployment Stack** — docker_compose_yml_postgres, docker_compose_yml_backend, docker_compose_yml_frontend [EXTRACTED 1.00]
+- **Authentication Flow (Register, Login, JWT)** — backend_docs_api_reference_register_user_endpoint, backend_docs_api_reference_login_endpoint, backend_docs_api_reference_jwt_authentication [INFERRED 0.85]
+- **User Management CRUD Surface** — backend_docs_api_reference_register_user_endpoint, backend_docs_api_reference_get_all_users_endpoint, backend_docs_api_reference_get_user_by_id_endpoint, backend_docs_api_reference_update_user_endpoint, backend_docs_api_reference_delete_user_endpoint [INFERRED 0.85]
+- **Application Deployment Stack** — docker_compose_postgres_service, docker_compose_backend_service, docker_compose_frontend_service [INFERRED 0.75]
 - **Kitchen Foods Platform Vision** — readme_kitchenfoods, readme_verified_home_chefs, readme_hyper_local_platform, docs_readme_economic_empowerment, docs_readme_public_health, docs_readme_cultural_food_accessibility [INFERRED 0.85]
 
-## Communities (31 total, 6 thin omitted)
+## Communities (33 total, 7 thin omitted)
 
-### Community 0 - "React UI Component Library"
-Cohesion: 0.06
-Nodes (46): Modal(), ModalProps, Column, Table(), TableProps, TODO: Wire up Axios call here (dashboard overview fetch), statCards, initialForm (+38 more)
+### Community 0 - "Admin App Shell"
+Cohesion: 0.05
+Nodes (60): App(), ProtectedRoute(), AdminLayout(), Header(), titleMap, navItems, Sidebar(), Modal() (+52 more)
 
-### Community 1 - "Admin Auth & CRUD API"
-Cohesion: 0.11
-Nodes (36): addFood(), adminLogin(), createUser(), deleteOrder(), getDashboardOverview(), getFood(), getOrders(), getStats() (+28 more)
-
-### Community 2 - "Customer Home Experience"
+### Community 1 - "Customer Menu Components"
 Cohesion: 0.09
-Nodes (21): App(), Hero(), HowItWorks(), ImpactCounter(), Stats, MenuCustomization(), PromoBanner(), PROMOS (+13 more)
+Nodes (41): CategoryPills(), CategoryPillsProps, FoodItemCard(), FoodItemCardProps, FoodItemGrid(), FoodItemGridProps, MenuCustomization(), MenuHeader() (+33 more)
 
-### Community 3 - "Chef Earnings & Food Items"
-Cohesion: 0.10
-Nodes (24): App(), cn(), CustomFoodItem, EarningsChart(), EarningsChartProps, NewOrderToast(), NewOrderToastProps, OrderCard() (+16 more)
+### Community 2 - "Admin API Controllers"
+Cohesion: 0.08
+Nodes (46): addFood(), adminLogin(), createUser(), deleteOrder(), getDashboardOverview(), getFood(), getOrders(), getStats() (+38 more)
 
-### Community 4 - "Backend Dependency Stack"
+### Community 3 - "Chef App Interface"
+Cohesion: 0.07
+Nodes (30): App(), cn(), CustomFoodItem, EarningsChart(), EarningsChartProps, NewOrderToast(), NewOrderToastProps, OrderCard() (+22 more)
+
+### Community 4 - "Backend Init & Food API"
+Cohesion: 0.08
+Nodes (24): __dirname, __filename, initDb(), addChefFoodItem(), deleteChefFoodItem(), getPublicFoodCategories(), getPublicFoodItems(), app (+16 more)
+
+### Community 5 - "Customer Landing Pages"
+Cohesion: 0.08
+Nodes (22): App(), Hero(), HeroContent(), TRUST_BADGES, HeroImageMosaic(), HowItWorks(), STEPS, ImpactStats() (+14 more)
+
+### Community 6 - "Backend Dependencies"
 Cohesion: 0.06
-Nodes (32): author, dependencies, bcrypt, cors, dotenv, express, jsonwebtoken, pg (+24 more)
+Nodes (34): author, dependencies, bcrypt, cors, dotenv, express, jsonwebtoken, multer (+26 more)
 
-### Community 5 - "Database & Order Management"
+### Community 7 - "Database Access Layer"
 Cohesion: 0.09
-Nodes (10): __dirname, __filename, pool, claimOrder(), createOrder(), getChefOrders(), getCustomerOrders(), updateOrderStatus() (+2 more)
+Nodes (11): __dirname, __filename, pool, claimOrder(), createOrder(), getChefOrders(), getCustomerOrders(), updateOrderStatus() (+3 more)
 
-### Community 6 - "DB Init & User Management"
-Cohesion: 0.10
-Nodes (21): __dirname, __filename, initDb(), deleteUser(), getAllUsers(), getUserById(), updateUser(), app (+13 more)
-
-### Community 7 - "Admin Dashboard UI"
-Cohesion: 0.13
-Nodes (20): App(), ProtectedRoute(), AdminLayout(), Header(), titleMap, navItems, Sidebar(), AuthContext (+12 more)
-
-### Community 8 - "Frontend Build Tooling"
+### Community 8 - "Frontend Tooling"
 Cohesion: 0.07
 Nodes (26): devDependencies, tailwindcss, @tailwindcss/vite, @types/node, @types/react, @types/react-dom, typescript, vite (+18 more)
 
-### Community 9 - "Shared HTTP Client Deps"
+### Community 9 - "Frontend Dependencies"
 Cohesion: 0.08
 Nodes (25): axios, clsx, date-fns, dependencies, axios, clsx, date-fns, @google/genai (+17 more)
 
-### Community 10 - "API Contract & Deployment"
-Cohesion: 0.10
-Nodes (21): Backend API Reference Document, OpenAPI Contract, Swagger UI, Backend Docker Service, Frontend Docker Service, PostgreSQL 16 Service, cepdnaclk/eYY-project-theme, Cultural Food Accessibility (+13 more)
+### Community 10 - "Request Form Fields"
+Cohesion: 0.12
+Nodes (16): BudgetField(), BudgetFieldProps, QUICK_ADD_AMOUNTS, DateTimeFields(), DateTimeFieldsProps, PortionSelector(), PortionSelectorProps, RequestForm() (+8 more)
 
-### Community 11 - "TypeScript Compiler Config"
+### Community 11 - "TypeScript Configuration"
 Cohesion: 0.10
 Nodes (20): compilerOptions, allowImportingTsExtensions, allowJs, isolatedModules, jsx, lib, module, moduleDetection (+12 more)
 
-### Community 12 - "Public Food & Category API"
-Cohesion: 0.27
-Nodes (5): addChefFoodItem(), deleteChefFoodItem(), getPublicFoodCategories(), getPublicFoodItems(), Food
+### Community 12 - "REST Endpoint Docs"
+Cohesion: 0.17
+Nodes (20): Kitchen Foods Backend API Reference, Delete User Endpoint (DELETE /api/users/:uid), Backend Error Formats (route vs global handler), Food Item imageUrl Field, Get All Users Endpoint (GET /api/users), Get User By ID Endpoint (GET /api/users/:uid), JWT Bearer Token Authentication, Login Endpoint (POST /api/auth/login) (+12 more)
 
-### Community 13 - "Site Layout & Navigation"
+### Community 13 - "API Docs & Vision"
+Cohesion: 0.12
+Nodes (18): Backend API Reference Document, OpenAPI Contract, Swagger UI, cepdnaclk/eYY-project-theme, Cultural Food Accessibility, Economic Empowerment, Hyper-Local Digital Marketplace, Kitchen Food Platform Project Page (+10 more)
+
+### Community 14 - "Login UI Components"
+Cohesion: 0.20
+Nodes (9): AuthForm(), BrandingPanel(), AuthRole, ROLES, RoleSelector(), RoleSelectorProps, TextField(), TextFieldProps (+1 more)
+
+### Community 15 - "Shared Layout Components"
 Cohesion: 0.21
 Nodes (9): Footer(), Layout(), LayoutProps, Navbar(), User, getInitials(), User, UserMenu() (+1 more)
 
-### Community 14 - "REST Endpoint Spec"
-Cohesion: 0.28
-Nodes (9): Backend Base URL (localhost:8000), DELETE /api/users/:uid, GET /api/users, GET /api/users/:uid, Global Error Handler, JWT Bearer Token Authentication, POST /api/auth/login, POST /api/auth/register (+1 more)
-
 ### Community 16 - "Logo & Brand Identity"
-Cohesion: 0.67
-Nodes (4): Kitchen Foods Platform Brand Identity, Logo Color Scheme, Visual Depiction of the Logo, Kitchen Food Logo
+Cohesion: 0.40
+Nodes (6): Logo Color Scheme, Visual Depiction of the Logo, Kitchen Food Logo, Kitchen Foods Platform Brand Identity, Chef Branding, Chef Logo
 
-### Community 17 - "Docs Build Script"
+### Community 17 - "Craving Search UI"
+Cohesion: 0.50
+Nodes (3): CravingChips(), CravingChipsProps, CRAVINGS
+
+### Community 19 - "Light Mode Script"
 Cohesion: 0.50
 Nodes (3): filesToProcess, fs, path
 
-### Community 18 - "Admin Brand Icon Assets"
+### Community 20 - "React Brand Assets"
 Cohesion: 0.50
 Nodes (4): Atom Orbit Iconography, Frontend Admin Brand Assets, React, React Logo
 
-### Community 19 - "Chef Impact Imagery"
+### Community 21 - "Chef Impact Imagery"
 Cohesion: 1.00
 Nodes (3): Chef, Chef Impact Image 1, Impact
 
-### Community 20 - "Chef Persona & Marketing"
+### Community 22 - "Chef Marketing Assets"
 Cohesion: 0.67
 Nodes (3): Chef Impact Image 2, Chef Persona, Marketing Messaging
 
-### Community 21 - "Chef Logo Branding"
-Cohesion: 0.67
-Nodes (3): Kitchen Foods Platform Brand Identity, Chef Branding, Chef Logo
-
-### Community 22 - "Aunty Kamala Persona"
+### Community 23 - "Customer Persona Image"
 Cohesion: 1.00
 Nodes (3): Customer-Facing Image Asset, Aunty Kamala (Person), Aunty Kamala Photo Asset
 
@@ -183,9 +191,9 @@ Nodes (3): Customer-Facing Image Asset, Aunty Kamala (Person), Aunty Kamala Phot
   frontend/src/customer/assets/aunty-kamala.jpg · relation: conceptually_related_to
 
 ## Knowledge Gaps
-- **147 isolated node(s):** `pool`, `testUsers`, `name`, `version`, `description` (+142 more)
+- **182 isolated node(s):** `pool`, `testUsers`, `__filename`, `__dirname`, `__filename` (+177 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **6 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **7 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_

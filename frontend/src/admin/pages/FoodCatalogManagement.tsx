@@ -92,27 +92,20 @@ export const FoodCatalogManagement = () => {
         setItems((prev) =>
           prev.map((item) => (item.id === updated.id ? updated : item)),
         );
-      } catch {
-        setItems((prev) =>
-          prev.map((item) =>
-            item.id === editingItem.id ? { ...item, ...formState } : item,
-          ),
-        );
+      } catch (err) {
+        alert(`Failed to update food item: ${(err as Error).message}`);
+        closeModal();
+        return;
       }
     } else {
       // TODO: Wire up Axios call here (create food item)
       try {
         const created = await adminApi.createFoodItem(formState);
         setItems((prev) => [created, ...prev]);
-      } catch {
-        setItems((prev) => [
-          {
-            id: `F-${Math.floor(Math.random() * 9000 + 1000)}`,
-            ...formState,
-            categoryName: '',
-          } as FoodItem,
-          ...prev,
-        ]);
+      } catch (err) {
+        alert(`Failed to create food item: ${(err as Error).message}`);
+        closeModal();
+        return;
       }
     }
 

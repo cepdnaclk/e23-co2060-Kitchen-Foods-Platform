@@ -1,5 +1,5 @@
 import React from 'react';
-import { Bell, X } from 'lucide-react';
+import { BellRing, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface NewOrderToastProps {
@@ -19,19 +19,24 @@ export const NewOrderToast = ({ isVisible, onClose, orderId }: NewOrderToastProp
           transition={{ type: 'spring', damping: 20, stiffness: 200 }}
           className="fixed top-0 left-1/2 z-[100] w-full max-w-md px-4"
         >
-          <div className="bg-slate-900/90 backdrop-blur-md text-white p-4 rounded-2xl border border-orange-500/30 shadow-[0_20px_50px_rgba(249,115,22,0.15)] flex items-center justify-between">
+          <div className="bg-white/95 backdrop-blur-xl border border-brand-primary/40 rounded-2xl p-4 shadow-[0_20px_50px_rgba(242,125,38,0.18)] flex items-center justify-between">
             <div className="flex items-center gap-3.5">
-              <div className="bg-orange-500 text-white p-2.5 rounded-xl shadow-lg shadow-orange-500/20">
-                <Bell className="animate-swing" size={20} />
+              <div className="relative">
+                <div className="bg-gradient-to-tr from-brand-primary to-amber-500 text-white p-2.5 rounded-xl shadow-lg shadow-brand-primary/30">
+                  <BellRing size={20} />
+                </div>
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white animate-pulse" />
               </div>
               <div>
-                <p className="font-bold text-sm text-slate-100">New Order Placed!</p>
-                <p className="text-xs text-slate-400">Order ID <span className="font-mono text-orange-400 font-bold">{orderId}</span> needs your confirmation.</p>
+                <p className="font-bold text-sm text-stone-900">New Order Placed!</p>
+                <p className="text-xs text-stone-500 mt-0.5">
+                  Order <span className="font-mono text-brand-primary font-bold">{orderId}</span> needs your confirmation.
+                </p>
               </div>
             </div>
-            <button 
+            <button
               onClick={onClose}
-              className="p-1.5 hover:bg-slate-800 text-slate-400 hover:text-white rounded-lg transition-colors"
+              className="p-1.5 hover:bg-stone-100 text-stone-500 hover:text-stone-900 rounded-lg transition-colors"
             >
               <X size={16} />
             </button>

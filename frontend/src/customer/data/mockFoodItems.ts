@@ -1,3 +1,11 @@
+// ---------------------------------------------------------------------------
+// Mock food items
+// ---------------------------------------------------------------------------
+// Static catalog used as a fallback by Recommendations (and other sections)
+// when the backend is unreachable. Items are grouped by category (c1-c6),
+// matching the seeded category ids in the backend database.
+// ---------------------------------------------------------------------------
+
 import { FoodItem } from "../types";
 
 export const mockFoodItems: FoodItem[] = [

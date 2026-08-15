@@ -1,3 +1,11 @@
+// ---------------------------------------------------------------------------
+// UserMenu
+// ---------------------------------------------------------------------------
+// The logged-in user's avatar chip in the navbar. Clicking it opens a small
+// dropdown showing the user's name/email/role and a Logout action. Closes
+// on Escape, on outside click, or whenever the route changes.
+// ---------------------------------------------------------------------------
+
 import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { ChevronDown, LogOut } from 'lucide-react';
@@ -15,6 +23,7 @@ interface UserMenuProps {
   onLogout: () => void;
 }
 
+/** Derive an avatar monogram, e.g. "Jane Doe" → "JD". */
 function getInitials(name: string, email: string) {
   const parts = name.trim().split(/\s+/).filter(Boolean);
   if (parts.length >= 2) {
@@ -31,10 +40,12 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
   const menuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
+  // Close the dropdown on navigation.
   useEffect(() => {
     setIsOpen(false);
   }, [location]);
 
+  // Close the dropdown on Escape.
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setIsOpen(false);
@@ -47,6 +58,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
 
   return (
     <div className="relative" ref={menuRef}>
+      {/* Trigger: avatar chip */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2.5 pl-1.5 pr-3 py-1.5 rounded-full border-2 border-brand-primary/30 hover:border-brand-primary bg-white/60 hover:bg-white transition-all active:scale-95"
@@ -65,9 +77,11 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
         />
       </button>
 
+      {/* Dropdown */}
       <AnimatePresence>
         {isOpen && (
           <>
+            {/* Invisible backdrop to close on outside click */}
             <div className="fixed inset-0 z-40" onClick={() => setIsOpen(false)} />
             <motion.div
               initial={{ opacity: 0, y: -8, scale: 0.97 }}
@@ -77,16 +91,16 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
               role="menu"
               className="absolute right-0 top-full mt-2 w-64 z-50 bg-white rounded-2xl border border-stone-900/5 shadow-xl shadow-stone-900/5 overflow-hidden"
             >
+              {/* User summary */}
               <div className="px-5 py-4 bg-stone-50/80 border-b border-stone-900/5">
-                <p className="font-serif font-bold text-stone-900 truncate">
-                  {user.full_name}
-                </p>
+                <p className="font-serif font-bold text-stone-900 truncate">{user.full_name}</p>
                 <p className="text-xs text-stone-500 truncate mt-0.5">{user.email}</p>
                 <span className="inline-block mt-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-brand-primary bg-brand-primary/10 rounded-full">
                   {user.role}
                 </span>
               </div>
 
+              {/* Actions */}
               <div className="p-2">
                 <button
                   role="menuitem"

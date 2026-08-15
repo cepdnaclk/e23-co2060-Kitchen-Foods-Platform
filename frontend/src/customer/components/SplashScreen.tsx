@@ -1,3 +1,11 @@
+// ---------------------------------------------------------------------------
+// SplashScreen
+// ---------------------------------------------------------------------------
+// Full-screen animated intro shown while the homepage stats load (see the
+// useStats hook in App). Pure decoration — the logo, orbiting rings and
+// particles are all motion animations; it unmounts when loading finishes.
+// ---------------------------------------------------------------------------
+
 import React from 'react';
 import { motion } from 'motion/react';
 import { ChefHat } from 'lucide-react';

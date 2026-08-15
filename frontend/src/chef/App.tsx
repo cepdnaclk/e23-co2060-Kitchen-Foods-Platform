@@ -7,8 +7,9 @@ import { OrderCard } from './components/OrderCard';
 import { EarningsChart } from './components/EarningsChart';
 import { NewOrderToast } from './components/NewOrderToast';
 import { OrderDetailsModal } from './components/OrderDetailsModal';
+import { PlaceBidModal } from './components/PlaceBidModal';
 
-import { Order, ChefProfile } from './types';
+import { Order, ChefProfile, ChefQuote } from './types';
 import { subDays, format, formatDistanceToNow } from 'date-fns';
 import {
   DollarSign,
@@ -30,6 +31,7 @@ import {
   Trash2,
   Package,
   AlertCircle,
+  HandCoins,
   LucideIcon,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -54,10 +56,12 @@ interface CustomFoodItem {
 
 const statusDot: Record<Order['status'], string> = {
   pending: 'bg-amber-500',
+  quoted: 'bg-brand-primary',
   preparing: 'bg-blue-500',
   ready: 'bg-emerald-500',
   delivered: 'bg-stone-400',
   cancelled: 'bg-rose-500',
+  expired: 'bg-stone-400',
 };
 
 const timeAgo = (iso?: string) => {
@@ -79,11 +83,13 @@ interface PipelineColumnProps {
   onShowAll?: () => void;
   onStatusChange: (id: string, status: Order['status']) => void;
   onViewDetails?: (order: Order) => void;
+  onBid?: (order: Order) => void;
+  myQuoteFor?: (order: Order) => { price: number; status: string } | null;
 }
 
 const PipelineColumn = ({
   title, count, dotClass, icon: Icon, emptyIcon: EmptyIcon, emptyText,
-  orders, moreCount = 0, onShowAll, onStatusChange, onViewDetails,
+  orders, moreCount = 0, onShowAll, onStatusChange, onViewDetails, onBid, myQuoteFor,
 }: PipelineColumnProps) => (
   <div className="chef-panel rounded-2xl p-4 flex flex-col min-h-[280px]">
     <div className="flex items-center justify-between mb-4 pb-2.5 border-b border-stone-900/10">
@@ -108,6 +114,8 @@ const PipelineColumn = ({
             order={order}
             onStatusChange={onStatusChange}
             onViewDetails={onViewDetails}
+            onBid={onBid}
+            myQuote={myQuoteFor ? myQuoteFor(order) : null}
           />
         ))
       )}
@@ -184,6 +192,10 @@ export default function App() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [smsEnabled, setSmsEnabled] = useState(true);
   const [audioEnabled, setAudioEnabled] = useState(false);
+
+  // Bidding engine states
+  const [chefQuotes, setChefQuotes] = useState<ChefQuote[]>([]);
+  const [bidOrder, setBidOrder] = useState<Order | null>(null);
 
   // Keep the avatar editor in sync with the loaded profile.
   useEffect(() => {
@@ -278,6 +290,24 @@ export default function App() {
     return () => clearInterval(interval);
   }, [profile.id]);
 
+  // Fetch this chef's bids so cards can show "Your bid" state.
+  useEffect(() => {
+    if (!profile.id) return;
+    const fetchChefQuotes = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/quotes/chef/${profile.id}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setChefQuotes(data);
+      } catch (err) {
+        console.error('Error fetching chef quotes:', err);
+      }
+    };
+    fetchChefQuotes();
+    const interval = setInterval(fetchChefQuotes, 15000);
+    return () => clearInterval(interval);
+  }, [profile.id]);
+
   const handleProfileUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -295,21 +325,13 @@ export default function App() {
 
   const handleStatusChange = async (id: string, status: Order['status']) => {
     try {
-      let response: Response;
-
-      if (status === 'preparing') {
-        response = await fetch(`${API_BASE_URL}/orders/${id}/claim`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ chefId: profile.id }),
-        });
-      } else {
-        response = await fetch(`${API_BASE_URL}/orders/${id}/status`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: status.charAt(0).toUpperCase() + status.slice(1) }),
-        });
-      }
+      // Assignment now happens via the bidding engine (quote acceptance), so
+      // every chef-side transition goes through the plain status endpoint.
+      const response = await fetch(`${API_BASE_URL}/orders/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: status.charAt(0).toUpperCase() + status.slice(1) }),
+      });
 
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
@@ -386,12 +408,49 @@ export default function App() {
     }
   };
 
-  const activeOrders = orders.filter(o => o.status !== 'delivered' && o.status !== 'cancelled');
+  const handleBidSubmit = async (data: { price: number; note: string; fulfillmentTime: string }) => {
+    if (!bidOrder) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/quotes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: bidOrder.id,
+          chefId: profile.id,
+          price: data.price,
+          note: data.note,
+          fulfillmentTime: data.fulfillmentTime,
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to submit bid');
+      }
+      setBidOrder(null);
+      // Refresh the chef's quotes so the "Your bid" chip appears immediately.
+      const quotesRes = await fetch(`${API_BASE_URL}/quotes/chef/${profile.id}`);
+      if (quotesRes.ok) setChefQuotes(await quotesRes.json());
+    } catch (err: any) {
+      alert(err.message || 'Failed to submit bid');
+    }
+  };
+
+  const activeOrders = orders.filter(o =>
+    o.status !== 'delivered' && o.status !== 'cancelled' && o.status !== 'expired'
+  );
   const completedOrders = orders.filter(o => o.status === 'delivered' || o.status === 'cancelled');
 
   const pendingColumn = activeOrders.filter(o => o.status === 'pending');
+  const quotedColumn = activeOrders.filter(o => o.status === 'quoted');
   const preparingColumn = activeOrders.filter(o => o.status === 'preparing');
   const readyColumn = activeOrders.filter(o => o.status === 'ready');
+
+  // Map the chef's bids by order id so cards can render their bid state.
+  const myQuoteByOrder = new Map<string, { price: number; status: string }>();
+  for (const quote of chefQuotes) {
+    myQuoteByOrder.set(quote.orderId, { price: quote.price, status: quote.status });
+  }
+  const myQuoteFor = (order: Order) => myQuoteByOrder.get(order.id) ?? null;
 
   const deliveredCount = completedOrders.filter(o => o.status === 'delivered').length;
   const totalEarnings = completedOrders
@@ -449,6 +508,7 @@ export default function App() {
     item.description.toLowerCase().includes(q);
 
   const filteredPending = pendingColumn.filter(matchesOrder);
+  const filteredQuoted = quotedColumn.filter(matchesOrder);
   const filteredPreparing = preparingColumn.filter(matchesOrder);
   const filteredReady = readyColumn.filter(matchesOrder);
   const filteredCompleted = completedOrders.filter(matchesOrder);
@@ -585,17 +645,19 @@ export default function App() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             <PipelineColumn
-              title="New Orders"
+              title="Open Orders"
               count={pendingColumn.length}
               dotClass="bg-amber-500 shadow-amber-500/50"
               icon={AlertCircle}
               emptyIcon={ShoppingBag}
-              emptyText="No new orders"
+              emptyText="No open orders"
               orders={filteredPending.slice(0, 3)}
               moreCount={Math.max(0, filteredPending.length - 3)}
               onShowAll={() => setCurrentView('Orders')}
               onStatusChange={handleStatusChange}
               onViewDetails={setSelectedOrderForModal}
+              onBid={setBidOrder}
+              myQuoteFor={myQuoteFor}
             />
             <PipelineColumn
               title="Cooking"
@@ -663,18 +725,31 @@ export default function App() {
       </div>
 
       {activeTab === 'active' ? (
-        searchQuery && filteredPending.length + filteredPreparing.length + filteredReady.length === 0 ? (
+        searchQuery && filteredPending.length + filteredQuoted.length + filteredPreparing.length + filteredReady.length === 0 ? (
           <NoSearchResults onClear={() => setSearchQuery('')} />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
             <PipelineColumn
-              title="New Orders"
+              title="Open Orders"
               count={pendingColumn.length}
               dotClass="bg-amber-500 shadow-amber-500/50"
               icon={AlertCircle}
               emptyIcon={ShoppingBag}
-              emptyText="No pending orders"
+              emptyText="No orders open for bidding"
               orders={filteredPending}
+              onStatusChange={handleStatusChange}
+              onViewDetails={setSelectedOrderForModal}
+              onBid={setBidOrder}
+              myQuoteFor={myQuoteFor}
+            />
+            <PipelineColumn
+              title="Assigned to You"
+              count={quotedColumn.length}
+              dotClass="bg-brand-primary shadow-brand-primary/50"
+              icon={HandCoins}
+              emptyIcon={CheckCircle}
+              emptyText="No won bids yet"
+              orders={filteredQuoted}
               onStatusChange={handleStatusChange}
               onViewDetails={setSelectedOrderForModal}
             />
@@ -1079,6 +1154,7 @@ export default function App() {
               order={selectedOrderForModal}
               onClose={() => setSelectedOrderForModal(null)}
               onStatusChange={handleStatusChange}
+              onBid={setBidOrder}
             />
           )}
         </AnimatePresence>
@@ -1153,6 +1229,22 @@ export default function App() {
                 </form>
               </motion.div>
             </div>
+          )}
+        </AnimatePresence>
+
+        {/* Place Bid Modal */}
+        <AnimatePresence>
+          {bidOrder && (
+            <PlaceBidModal
+              order={bidOrder}
+              existingQuote={myQuoteByOrder.get(bidOrder.id) ? {
+                price: myQuoteByOrder.get(bidOrder.id)!.price,
+                note: chefQuotes.find(q => q.orderId === bidOrder.id)?.note ?? null,
+                fulfillmentTime: chefQuotes.find(q => q.orderId === bidOrder.id)?.fulfillmentTime ?? null,
+              } : null}
+              onClose={() => setBidOrder(null)}
+              onSubmit={handleBidSubmit}
+            />
           )}
         </AnimatePresence>
 

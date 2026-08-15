@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Order } from '../types';
-import { Clock, CheckCircle2, ChefHat, Package, AlertCircle, ArrowRight, Eye } from 'lucide-react';
+import { Clock, CheckCircle2, ChefHat, Package, AlertCircle, ArrowRight, Eye, HandCoins, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface OrderCardProps {
   order: Order;
   onStatusChange: (id: string, status: Order['status']) => void;
   onViewDetails?: (order: Order) => void;
+  /** Opens the bid modal for an open order. */
+  onBid?: (order: Order) => void;
+  /** The current chef's bid on this order, if any. */
+  myQuote?: { price: number; status: string } | null;
 }
 
 const statusConfig: Record<Order['status'], {
@@ -19,7 +23,13 @@ const statusConfig: Record<Order['status'], {
     icon: AlertCircle,
     chip: 'bg-amber-500/10 text-amber-600 border-amber-500/30',
     tile: 'bg-amber-500/10 text-amber-600 border-amber-500/25',
-    label: 'New Order',
+    label: 'Open for Bids',
+  },
+  quoted: {
+    icon: HandCoins,
+    chip: 'bg-orange-500/10 text-brand-primary border-brand-primary/30',
+    tile: 'bg-brand-primary/10 text-brand-primary border-brand-primary/25',
+    label: 'Assigned',
   },
   preparing: {
     icon: ChefHat,
@@ -40,19 +50,25 @@ const statusConfig: Record<Order['status'], {
     label: 'Completed',
   },
   cancelled: {
-    icon: AlertCircle,
+    icon: XCircle,
     chip: 'bg-rose-500/10 text-rose-600 border-rose-500/30',
     tile: 'bg-rose-500/10 text-rose-600 border-rose-500/25',
     label: 'Cancelled',
   },
+  expired: {
+    icon: XCircle,
+    chip: 'bg-stone-500/10 text-stone-500 border-stone-500/30',
+    tile: 'bg-stone-500/10 text-stone-500 border-stone-500/25',
+    label: 'Expired',
+  },
 };
 
-export const OrderCard = ({ order, onStatusChange, onViewDetails }: OrderCardProps) => {
+export const OrderCard = ({ order, onStatusChange, onViewDetails, onBid, myQuote }: OrderCardProps) => {
   const config = statusConfig[order.status] ?? statusConfig.pending;
   const [timeLeft, setTimeLeft] = useState<string>('');
 
   useEffect(() => {
-    if (order.status === 'delivered' || order.status === 'cancelled') {
+    if (order.status === 'delivered' || order.status === 'cancelled' || order.status === 'expired') {
       setTimeLeft('');
       return;
     }
@@ -74,6 +90,9 @@ export const OrderCard = ({ order, onStatusChange, onViewDetails }: OrderCardPro
 
     return () => clearInterval(interval);
   }, [order.id, order.status]);
+
+  const hasActiveBid = myQuote && myQuote.status === 'Pending';
+  const bidRejected = myQuote && myQuote.status === 'Rejected';
 
   return (
     <motion.div
@@ -113,6 +132,27 @@ export const OrderCard = ({ order, onStatusChange, onViewDetails }: OrderCardPro
         </div>
       </div>
 
+      {/* Bid status strip */}
+      {order.status === 'pending' && (
+        <div className="flex flex-wrap items-center gap-2 mb-4">
+          {hasActiveBid && (
+            <span className="chef-chip bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
+              Your bid: Rs. {myQuote!.price.toLocaleString()}
+            </span>
+          )}
+          {bidRejected && (
+            <span className="chef-chip bg-rose-500/10 text-rose-600 border-rose-500/30">
+              Bid rejected — order closed
+            </span>
+          )}
+          {typeof order.quoteCount === 'number' && order.quoteCount > 0 && (
+            <span className="chef-chip bg-stone-500/10 text-stone-600 border-stone-500/30">
+              {order.quoteCount} bid{order.quoteCount === 1 ? '' : 's'}
+            </span>
+          )}
+        </div>
+      )}
+
       {/* Items */}
       <div className="space-y-1.5 mb-4 py-2 border-t border-b border-stone-900/10">
         {order.items.map((item, idx) => (
@@ -151,12 +191,20 @@ export const OrderCard = ({ order, onStatusChange, onViewDetails }: OrderCardPro
             </button>
           )}
 
-          {order.status === 'pending' && (
+          {order.status === 'pending' && onBid && (
+            <button
+              onClick={() => onBid(order)}
+              className="px-3.5 py-2 bg-gradient-to-r from-brand-primary to-amber-500 text-white text-xs font-bold rounded-lg hover:shadow-lg hover:shadow-brand-primary/25 active:scale-95 transition-all flex items-center gap-1.5"
+            >
+              <HandCoins size={13} /> {hasActiveBid ? 'Update Bid' : 'Place Bid'}
+            </button>
+          )}
+          {order.status === 'quoted' && (
             <button
               onClick={() => onStatusChange(order.id, 'preparing')}
               className="px-3.5 py-2 bg-gradient-to-r from-brand-primary to-amber-500 text-white text-xs font-bold rounded-lg hover:shadow-lg hover:shadow-brand-primary/25 active:scale-95 transition-all flex items-center gap-1.5"
             >
-              Accept <ArrowRight size={12} />
+              Start Cooking <ArrowRight size={12} />
             </button>
           )}
           {order.status === 'preparing' && (

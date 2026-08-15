@@ -10,7 +10,7 @@ import {
   updateUserByIdService,
 } from "./user.service.js";
 
-const VALID_ORDER_STATUSES = new Set(["Pending", "Preparing", "Ready", "Delivered", "Cancelled", "Quoted", "Paid", "Completed"]);
+const VALID_ORDER_STATUSES = new Set(["Pending", "Preparing", "Ready", "Delivered", "Cancelled", "Quoted", "Paid", "Completed", "Expired"]);
 
 export const getStatsService = async () => {
   const [userCount, chefCount, pendingChefCount, orderCount, foodCount] =

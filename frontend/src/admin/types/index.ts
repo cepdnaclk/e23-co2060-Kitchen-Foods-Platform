@@ -9,6 +9,7 @@ export type OrderStatus =
   | 'Quoted'
   | 'Paid'
   | 'Completed'
+  | 'Expired'
 
 export interface AdminUser {
   email: string

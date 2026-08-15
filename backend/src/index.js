@@ -11,7 +11,9 @@ import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.route.js";
 import foodRoutes from "./routes/food.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import quoteRoutes from "./routes/quote.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
+import Order from "./models/order.model.js";
 import { UPLOADS_DIR } from "./middlewares/upload.middleware.js";
 
 const app = express();
@@ -40,6 +42,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/food", foodRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/quotes", quoteRoutes);
 app.use("/api/upload", uploadRoutes);
 
 app.get("/api-docs/openapi.json", (req, res) => {
@@ -68,4 +71,19 @@ const startServer = async () => {
   });
 };
 
-startServer();
+// Bidding-engine expiry sweep: Pending orders past their expires_at become
+// Expired and their active quotes are voided. Runs on startup and then
+// every minute; feed reads also sweep lazily as a safety net.
+const runExpirySweep = async () => {
+  try {
+    const expired = await Order.expireOverdue();
+    if (expired > 0) console.log(`Expiry sweep: expired ${expired} order(s)`);
+  } catch (err) {
+    console.error("Expiry sweep failed:", err.message);
+  }
+};
+
+startServer().then(() => {
+  runExpirySweep();
+  setInterval(runExpirySweep, 60_000);
+});

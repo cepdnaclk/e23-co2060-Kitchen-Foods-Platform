@@ -7,11 +7,14 @@ interface OrderDetailsModalProps {
   order: Order;
   onClose: () => void;
   onStatusChange: (id: string, status: Order['status']) => void;
+  /** Opens the bid modal for an open order. */
+  onBid?: (order: Order) => void;
 }
 
-export const OrderDetailsModal = ({ order, onClose, onStatusChange }: OrderDetailsModalProps) => {
+export const OrderDetailsModal = ({ order, onClose, onStatusChange, onBid }: OrderDetailsModalProps) => {
   const steps = [
     { key: 'pending', label: 'Received' },
+    { key: 'quoted', label: 'Assigned' },
     { key: 'preparing', label: 'In Kitchen' },
     { key: 'ready', label: 'Ready for Pickup' },
     { key: 'delivered', label: 'Completed' },
@@ -20,8 +23,10 @@ export const OrderDetailsModal = ({ order, onClose, onStatusChange }: OrderDetai
   const currentStepIndex = steps.findIndex(s => s.key === order.status);
 
   const primaryAction: { label: string; onClick: () => void; cls: string } | null =
-    order.status === 'pending'
-      ? { label: 'Accept Order', onClick: () => { onStatusChange(order.id, 'preparing'); onClose(); }, cls: 'bg-gradient-to-r from-brand-primary to-amber-500 text-white hover:shadow-lg hover:shadow-brand-primary/25' }
+    order.status === 'pending' && onBid
+      ? { label: 'Place Bid', onClick: () => { onBid(order); onClose(); }, cls: 'bg-gradient-to-r from-brand-primary to-amber-500 text-white hover:shadow-lg hover:shadow-brand-primary/25' }
+      : order.status === 'quoted'
+      ? { label: 'Start Cooking', onClick: () => { onStatusChange(order.id, 'preparing'); onClose(); }, cls: 'bg-gradient-to-r from-brand-primary to-amber-500 text-white hover:shadow-lg hover:shadow-brand-primary/25' }
       : order.status === 'preparing'
         ? { label: 'Mark Ready', onClick: () => { onStatusChange(order.id, 'ready'); onClose(); }, cls: 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:shadow-lg hover:shadow-emerald-500/25' }
         : order.status === 'ready'

@@ -1,9 +1,10 @@
 // Centralized error handling middleware
 export const errorHandler = (err, req, res, next) => {
-  console.log(err.stack);
-  res.status(500).json({
-    status: 500,
-    message: "Something went wrong",
+  const status = err.statusCode || 500;
+  if (status >= 500) console.error(err.stack);
+  res.status(status).json({
+    status,
+    message: status === 500 ? "Something went wrong" : err.message,
     error: err.message,
   });
 };

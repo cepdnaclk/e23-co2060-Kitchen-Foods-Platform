@@ -223,6 +223,34 @@ Common failures:
 - `401` / `403` auth errors
 - `500` global error shape
 
+### 7) Upload an Image
+
+- Method: `POST`
+- Path: `/api/upload`
+- Auth: Yes (Bearer token)
+
+Uploads a single image file (multipart/form-data, field name `image`).
+
+Allowed types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`, `image/avif`.
+Maximum size: **5MB**.
+
+Files are stored on the backend in `backend/uploads/` and served at `/uploads/<filename>`. Use the returned `url` in the `imageUrl` field of a food item.
+
+Success response (`201`):
+
+```json
+{
+  "url": "/uploads/1785825134492-2195715dd4280379.png",
+  "filename": "1785825134492-2195715dd4280379.png"
+}
+```
+
+Common failures:
+
+- `400` `{ "error": "Only image files are allowed (JPEG, PNG, WebP, GIF, AVIF)" }`
+- `400` `{ "error": "Image is too large (maximum 5MB)" }`
+- `401` `{ "error": "No token provided" }`
+
 ## Quick Start
 
 1. Start DB/services (if needed):

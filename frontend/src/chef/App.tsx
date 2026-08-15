@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL } from '../shared/api';
+import { ImageUploader } from '../shared/ImageUploader';
 import { Sidebar } from './components/Sidebar';
 import { StatsCard } from './components/StatsCard';
 import { OrderCard } from './components/OrderCard';
@@ -86,7 +87,14 @@ export default function App() {
   // Advanced States
   const [selectedOrderForModal, setSelectedOrderForModal] = useState<Order | null>(null);
   const [isAddItemModalOpen, setIsAddItemModalOpen] = useState(false);
+  const [newItemImageUrl, setNewItemImageUrl] = useState('');
+  const [avatarUrl, setAvatarUrl] = useState('');
   const [menuItems, setMenuItems] = useState<CustomFoodItem[]>([]);
+
+  // Keep the avatar editor in sync with the loaded profile.
+  useEffect(() => {
+    setAvatarUrl(profile.avatar);
+  }, [profile.avatar]);
   const [menuLoading, setMenuLoading] = useState(false);
   const [categories, setCategories] = useState<{id: string; name: string}[]>([]);
 
@@ -232,7 +240,7 @@ export default function App() {
     const name = formData.get('name') as string;
     const price = Number(formData.get('price'));
     const categoryId = formData.get('category') as string;
-    const imageUrl = (formData.get('imageUrl') as string) || '';
+    const imageUrl = newItemImageUrl;
     const description = formData.get('description') as string;
 
     try {
@@ -263,6 +271,7 @@ export default function App() {
         description: saved.description || '',
       };
       setMenuItems(prev => [...prev, newItem]);
+      setNewItemImageUrl('');
       setIsAddItemModalOpen(false);
     } catch (err: any) {
       alert(err.message || 'Failed to add item');
@@ -604,7 +613,7 @@ export default function App() {
           <p className="text-xs text-slate-400">Your dishes listed on the platform</p>
         </div>
         <button 
-          onClick={() => setIsAddItemModalOpen(true)}
+          onClick={() => { setNewItemImageUrl(''); setIsAddItemModalOpen(true); }}
           className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-500 to-amber-500 text-white rounded-2xl font-bold text-xs hover:shadow-lg hover:shadow-orange-500/25 active:scale-95 transition-all"
         >
           <Plus size={16} />
@@ -689,8 +698,15 @@ export default function App() {
             <input name="location" type="text" defaultValue={profile.location} className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm text-slate-200" />
           </div>
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Profile Avatar Image Link</label>
-            <input name="avatar" type="text" defaultValue={profile.avatar} className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm text-slate-200" />
+            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Profile Avatar</label>
+            <ImageUploader
+              value={avatarUrl}
+              onChange={setAvatarUrl}
+              token={localStorage.getItem("token")}
+              variant="dark"
+              label="Profile avatar"
+            />
+            <input type="hidden" name="avatar" value={avatarUrl} />
           </div>
           
           <input type="hidden" name="specialty" value={profile.specialty} />
@@ -784,9 +800,19 @@ export default function App() {
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Bio description</label>
               <textarea name="bio" rows={4} defaultValue={profile.bio} required className="w-full px-4 py-2.5 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-sm text-slate-200" />
             </div>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Profile Avatar</label>
+              <ImageUploader
+                value={avatarUrl}
+                onChange={setAvatarUrl}
+                token={localStorage.getItem("token")}
+                variant="dark"
+                label="Profile avatar"
+              />
+              <input type="hidden" name="avatar" value={avatarUrl} />
+            </div>
             
             <input type="hidden" name="name" value={profile.name} />
-            <input type="hidden" name="avatar" value={profile.avatar} />
 
             <div className="flex justify-end gap-3 pt-4 border-t border-slate-800">
               <button 
@@ -885,8 +911,14 @@ export default function App() {
                     </select>
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Image URL</label>
-                    <input name="imageUrl" type="text" placeholder="https://unsplash.com/..." className="w-full px-3.5 py-2 bg-slate-950 border border-slate-800 rounded-xl focus:outline-none text-xs text-slate-200" />
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Dish image</label>
+                    <ImageUploader
+                      value={newItemImageUrl}
+                      onChange={setNewItemImageUrl}
+                      token={localStorage.getItem("token")}
+                      variant="dark"
+                      label="Dish image"
+                    />
                   </div>
                   <div className="space-y-1">
                     <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Short description</label>

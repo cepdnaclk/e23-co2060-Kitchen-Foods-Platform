@@ -1,5 +1,17 @@
 import pool from "../config/db.js";
 import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
+import path from "path";
+import { UPLOADS_DIR } from "../middlewares/upload.middleware.js";
+
+// Best-effort removal of an uploaded image when its food item is deleted or
+// its image is replaced. Only touches files under /uploads/.
+const removeUploadedFile = (imageUrl) => {
+  if (!imageUrl || !imageUrl.startsWith("/uploads/")) return;
+  const filename = path.basename(imageUrl);
+  if (!filename || filename.includes("..")) return;
+  fs.unlink(path.join(UPLOADS_DIR, filename), () => {});
+};
 
 class Food {
   constructor(
@@ -94,6 +106,11 @@ class Food {
     imageUrl,
     categoryId,
   ) {
+    const prev = await pool.query(
+      "SELECT image_url FROM food_items WHERE id = $1",
+      [id],
+    );
+
     const result = await pool.query(
       `UPDATE food_items
        SET name = $1,
@@ -117,6 +134,12 @@ class Food {
     );
 
     if (!result.rows[0]) return null;
+
+    // Remove the previously stored image if it was replaced with a new one.
+    if (prev.rows[0] && prev.rows[0].image_url !== imageUrl) {
+      removeUploadedFile(prev.rows[0].image_url);
+    }
+
     return Food.mapRow(result.rows[0]);
   }
 
@@ -137,6 +160,10 @@ class Food {
     );
 
     if (!result.rows[0]) return null;
+
+    // Free the uploaded image file.
+    removeUploadedFile(result.rows[0].image_url);
+
     return Food.mapRow(result.rows[0]);
   }
 }

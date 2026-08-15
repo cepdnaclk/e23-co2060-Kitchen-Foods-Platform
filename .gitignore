@@ -12,3 +12,7 @@
 # Ignore env files
 **/.env
 chef/.env.example
+
+# Ignore uploaded image files (keep the .gitkeep)
+backend/uploads/*
+!backend/uploads/.gitkeep

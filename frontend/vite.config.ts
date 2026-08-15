@@ -19,6 +19,7 @@ export default defineConfig(({ mode }) => {
       proxy: {
         '/api': 'http://localhost:8000',
         '/api-docs': 'http://localhost:8000',
+        '/uploads': 'http://localhost:8000',
       },
     },
   };

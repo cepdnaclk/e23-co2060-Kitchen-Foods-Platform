@@ -1,24 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { motion } from 'motion/react';
-import { ChefHat, Utensils, LogOut } from 'lucide-react';
+import { ChefHat, Utensils } from 'lucide-react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { UserMenu } from './UserMenu';
+
+interface User {
+  uid: string;
+  full_name: string;
+  email: string;
+  role: string;
+}
 
 export const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
+    if (token) {
+      try {
+        const stored = localStorage.getItem('user');
+        setUser(stored ? JSON.parse(stored) : null);
+      } catch {
+        setUser(null);
+      }
+    } else {
+      setUser(null);
+    }
   }, [location]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setIsLoggedIn(false);
+    setUser(null);
     navigate('/');
   };
 
@@ -52,14 +69,8 @@ export const Navbar: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-4">
-            {isLoggedIn ? (
-              <button
-                onClick={handleLogout}
-                className="hidden sm:flex px-6 py-2.5 text-red-500 border-2 border-red-500 text-sm font-bold rounded-full items-center gap-2 hover:bg-red-500 hover:text-white active:scale-95 transition-all"
-              >
-                <LogOut size={18} />
-                Logout
-              </button>
+            {user ? (
+              <UserMenu user={user} onLogout={handleLogout} />
             ) : (
               <Link to="/login" className="hidden sm:flex px-6 py-2.5 text-brand-primary border-2 border-brand-primary text-sm font-bold rounded-full items-center gap-2 hover:bg-brand-primary hover:text-white active:scale-95 transition-all">
                 Login / Sign Up
@@ -91,14 +102,16 @@ export const Navbar: React.FC = () => {
               <Link to="/impact" onClick={() => setIsMenuOpen(false)} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary">Chefs</Link>
               <a href="#how-it-works" onClick={(e) => handleNavClick(e, '#how-it-works')} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary cursor-pointer">About</a>
 
-              {isLoggedIn ? (
-                <button
-                  onClick={() => { handleLogout(); setIsMenuOpen(false); }}
-                  className="w-full py-4 border-2 border-red-500 text-red-500 text-center font-bold rounded-2xl flex items-center justify-center gap-2"
-                >
-                  <LogOut size={20} />
-                  Logout
-                </button>
+              {user ? (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-stone-900/5 bg-white/60">
+                  <span className="w-10 h-10 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold">
+                    {user.full_name.split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase() || 'U'}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold text-stone-900 truncate">{user.full_name}</p>
+                    <p className="text-xs text-stone-500 truncate">{user.email}</p>
+                  </div>
+                </div>
               ) : (
                 <Link to="/login" onClick={() => setIsMenuOpen(false)} className="w-full py-4 border-2 border-brand-primary text-brand-primary text-center font-bold rounded-2xl">
                   Login / Sign Up

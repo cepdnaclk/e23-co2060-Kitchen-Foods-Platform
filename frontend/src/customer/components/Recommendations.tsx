@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { Star, Clock, Heart, ChefHat, ArrowRight } from 'lucide-react';
+import { API_BASE_URL } from '../../shared/api';
 import { mockFoodItems } from '../data/mockFoodItems';
+import type { FoodItem } from '../types';
 
 const RATING_LABELS: Record<number, string> = {
   0: "🔥 Most Ordered",
@@ -14,8 +16,33 @@ const RATING_LABELS: Record<number, string> = {
 
 export const Recommendations: React.FC = () => {
   const [liked, setLiked] = useState<Set<string>>(new Set());
+  const [items, setItems] = useState<FoodItem[]>(mockFoodItems);
+
+  // Load real food items from the backend; fall back to the mock list offline.
+  useEffect(() => {
+    let active = true;
+
+    fetch(`${API_BASE_URL}/food`)
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to load food items");
+        return res.json();
+      })
+      .then((data: FoodItem[]) => {
+        if (active && Array.isArray(data) && data.length > 0) {
+          setItems(data);
+        }
+      })
+      .catch(() => {
+        // Keep the mock list as a fallback.
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   // Sort by rating descending and take top 6
-  const recommended = [...mockFoodItems]
+  const recommended = [...items]
     .sort((a, b) => (b.rating || 0) - (a.rating || 0))
     .slice(0, 6);
 

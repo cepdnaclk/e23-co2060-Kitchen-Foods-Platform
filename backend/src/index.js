@@ -11,6 +11,8 @@ import authRoutes from "./routes/auth.routes.js";
 import adminRoutes from "./routes/admin.route.js";
 import foodRoutes from "./routes/food.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import uploadRoutes from "./routes/upload.routes.js";
+import { UPLOADS_DIR } from "./middlewares/upload.middleware.js";
 
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
@@ -23,6 +25,14 @@ const openApiFilePath = path.resolve(__dirname, "../docs/openapi.json");
 app.use(express.json()); // parse the json bodies
 app.use(cors()); // enable cross origin requests
 
+// Serve uploaded images (see backend/uploads)
+app.use(
+  "/uploads",
+  express.static(UPLOADS_DIR, {
+    setHeaders: (res) => res.setHeader("X-Content-Type-Options", "nosniff"),
+  }),
+);
+
 // Routes
 // app.use("/api", userRoutes);
 app.use("/api/auth", authRoutes);
@@ -30,6 +40,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/food", foodRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/upload", uploadRoutes);
 
 app.get("/api-docs/openapi.json", (req, res) => {
   res.sendFile(openApiFilePath);

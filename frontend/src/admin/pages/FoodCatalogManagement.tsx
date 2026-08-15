@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { FiEdit2, FiImage, FiPlus, FiTrash2 } from "react-icons/fi";
+import { FiEdit2, FiPlus, FiTrash2 } from "react-icons/fi";
 import { Modal } from "../components/ui/Modal.tsx";
 import { Table } from "../components/ui/Table.tsx";
 import { adminApi } from "../services/adminApi.ts";
+import { ImageUploader } from "../../shared/ImageUploader";
 import type { FoodCategory, FoodItem } from "../types/index.ts";
 
 const initialForm = {
@@ -75,6 +76,11 @@ export const FoodCatalogManagement = () => {
 
   const handleSave = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!editingItem && !formState.imageUrl) {
+      alert("Please upload or paste a food image before creating the item.");
+      return;
+    }
 
     if (editingItem) {
       // TODO: Wire up Axios call here (update food item)
@@ -333,26 +339,18 @@ export const FoodCatalogManagement = () => {
             </label>
           </div>
 
-          <label className="block">
+          <div>
             <span className="mb-2 block text-sm font-medium text-slate-700">
-              Image URL
+              Food image
             </span>
-            <div className="relative">
-              <FiImage className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-              <input
-                type="url"
-                required
-                value={formState.imageUrl}
-                onChange={(event) =>
-                  setFormState((prev) => ({
-                    ...prev,
-                    imageUrl: event.target.value,
-                  }))
-                }
-                className="w-full rounded-xl border border-slate-300 py-2 pl-10 pr-3 text-sm outline-none focus:border-indigo-500"
-              />
-            </div>
-          </label>
+            <ImageUploader
+              value={formState.imageUrl}
+              onChange={(imageUrl) =>
+                setFormState((prev) => ({ ...prev, imageUrl }))
+              }
+              token={localStorage.getItem("admin_token")}
+            />
+          </div>
         </form>
       </Modal>
     </section>

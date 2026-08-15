@@ -49,6 +49,19 @@ export const UserManagement = () => {
     void loadUsers();
   }, []);
 
+  const chefs = useMemo(
+    () => users.filter((user) => user.role === "Chef"),
+    [users],
+  );
+  const customers = useMemo(
+    () => users.filter((user) => user.role === "Customer"),
+    [users],
+  );
+  const admins = useMemo(
+    () => users.filter((user) => user.role === "Admin"),
+    [users],
+  );
+
   const openCreateModal = () => {
     setError(null);
     setEditingUser(null);
@@ -130,8 +143,61 @@ export const UserManagement = () => {
     }
   };
 
+  const columns = [
+    {
+      key: "uid",
+      header: "UUID",
+      render: (row: User) => (
+        <span className="font-mono text-xs text-slate-600">{row.uid}</span>
+      ),
+    },
+    {
+      key: "full_name",
+      header: "Full Name",
+      render: (row: User) => row.full_name,
+    },
+    { key: "email", header: "Email", render: (row: User) => row.email },
+    {
+      key: "actions",
+      header: "Actions",
+      className: "w-[120px]",
+      render: (row: User) => (
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => openEditModal(row)}
+            className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-100"
+          >
+            <FiEdit2 />
+          </button>
+          <button
+            type="button"
+            onClick={() => handleDelete(row.uid)}
+            className="rounded-lg border border-rose-200 p-2 text-rose-600 transition hover:bg-rose-50"
+          >
+            <FiTrash2 />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  const userSection = (title: string, rows: User[]) => (
+    <div className="space-y-2">
+      <h4 className="text-sm font-semibold uppercase tracking-wide text-slate-600">
+        {title} ({rows.length})
+      </h4>
+      <Table
+        columns={columns}
+        rows={loading ? [] : rows}
+        rowKey={(row) => row.uid}
+        emptyMessage={loading ? "Loading users..." : `No ${title.toLowerCase()} found.`}
+      />
+    </div>
+  );
+
   return (
-    <section className="space-y-4">
+    <section className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg font-semibold text-slate-900">Users</h3>
@@ -153,60 +219,9 @@ export const UserManagement = () => {
         </button>
       </div>
 
-      <Table
-        columns={[
-          {
-            key: "uid",
-            header: "UUID",
-            render: (row) => (
-              <span className="font-mono text-xs text-slate-600">
-                {row.uid}
-              </span>
-            ),
-          },
-          {
-            key: "full_name",
-            header: "Full Name",
-            render: (row) => row.full_name,
-          },
-          { key: "email", header: "Email", render: (row) => row.email },
-          {
-            key: "role",
-            header: "Role",
-            render: (row) => (
-              <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">
-                {row.role}
-              </span>
-            ),
-          },
-          {
-            key: "actions",
-            header: "Actions",
-            className: "w-[120px]",
-            render: (row) => (
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => openEditModal(row)}
-                  className="rounded-lg border border-slate-200 p-2 text-slate-600 transition hover:bg-slate-100"
-                >
-                  <FiEdit2 />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(row.uid)}
-                  className="rounded-lg border border-rose-200 p-2 text-rose-600 transition hover:bg-rose-50"
-                >
-                  <FiTrash2 />
-                </button>
-              </div>
-            ),
-          },
-        ]}
-        rows={loading ? [] : users}
-        rowKey={(row) => row.uid}
-        emptyMessage={loading ? "Loading users..." : "No users found."}
-      />
+      {userSection("Chefs", chefs)}
+      {userSection("Customers", customers)}
+      {admins.length > 0 ? userSection("Administrators", admins) : null}
 
       <Modal
         isOpen={isModalOpen}

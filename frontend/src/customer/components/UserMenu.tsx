@@ -8,8 +8,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { ChevronDown, LogOut } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { ChevronDown, LogOut, UserRound } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 interface User {
   uid: string;
@@ -39,6 +39,7 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Close the dropdown on navigation.
   useEffect(() => {
@@ -102,6 +103,17 @@ export const UserMenu: React.FC<UserMenuProps> = ({ user, onLogout }) => {
 
               {/* Actions */}
               <div className="p-2">
+                <button
+                  role="menuitem"
+                  onClick={() => {
+                    setIsOpen(false);
+                    navigate('/profile');
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-stone-700 hover:bg-stone-100 transition-colors"
+                >
+                  <UserRound size={16} />
+                  My Profile
+                </button>
                 <button
                   role="menuitem"
                   onClick={() => {

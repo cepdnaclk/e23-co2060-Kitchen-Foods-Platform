@@ -23,6 +23,7 @@ import { SplashScreen } from './components/SplashScreen';
 
 import { ImpactStory } from './pages/ImpactStory';
 import { Login } from './pages/Login';
+import { Profile } from './pages/Profile';
 
 import type { Stats } from './types';
 
@@ -61,6 +62,7 @@ export default function App() {
             {/* Routes wrapped in the shared Navbar + Footer layout */}
             <Route path="/" element={<Layout><Home stats={stats} /></Layout>} />
             <Route path="/impact" element={<Layout><ImpactStory /></Layout>} />
+            <Route path="/profile" element={<Layout><Profile /></Layout>} />
 
             {/* Standalone route (no Navbar/Footer) */}
             <Route path="/login" element={<Login />} />

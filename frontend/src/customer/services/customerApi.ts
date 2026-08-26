@@ -146,6 +146,50 @@ export async function cancelOrder(orderId: string, customerId: string): Promise<
   }
 }
 
+/** A user profile as returned by GET /users/:uid. */
+export interface UserProfile {
+  uid: string;
+  full_name: string;
+  email: string;
+  role: string;
+  profile_img_url?: string | null;
+}
+
+/** Build auth headers for endpoints behind verifyToken. */
+function authHeaders(): HeadersInit {
+  const token = localStorage.getItem('token');
+  return {
+    'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+  };
+}
+
+/** Fetch a user's profile from the backend (falls back handled by callers). */
+export async function fetchUserProfile(uid: string): Promise<UserProfile> {
+  const res = await fetch(`${API_BASE_URL}/users/${uid}`, {
+    headers: authHeaders(),
+  });
+  if (!res.ok) throw new Error('Failed to fetch profile');
+  return (await res.json()) as UserProfile;
+}
+
+/** Update a user's profile (name / email). Resolves with the updated user. */
+export async function updateUserProfile(
+  uid: string,
+  data: { full_name: string; email: string },
+): Promise<UserProfile> {
+  const res = await fetch(`${API_BASE_URL}/users/${uid}`, {
+    method: 'PUT',
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    const errorData = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(errorData.error || 'Failed to update profile');
+  }
+  return (await res.json()) as UserProfile;
+}
+
 /** Fetch homepage impact statistics. */
 export async function fetchStats(): Promise<Stats> {
   const res = await fetch(`${API_BASE_URL}/stats`);

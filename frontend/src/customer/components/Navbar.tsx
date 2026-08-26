@@ -126,7 +126,11 @@ export const Navbar: React.FC = () => {
               <a href="#how-it-works" onClick={(e) => handleNavClick(e, '#how-it-works')} className="text-lg font-serif text-stone-900/70 hover:text-brand-primary cursor-pointer">About</a>
 
               {user ? (
-                <div className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-stone-900/5 bg-white/60">
+                <Link
+                  to="/profile"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="flex items-center gap-3 px-4 py-3 rounded-2xl border border-stone-900/5 bg-white/60 active:scale-[0.98] transition-transform"
+                >
                   <span className="w-10 h-10 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold">
                     {user.full_name.split(/\s+/).map((p) => p[0]).slice(0, 2).join('').toUpperCase() || 'U'}
                   </span>
@@ -134,7 +138,7 @@ export const Navbar: React.FC = () => {
                     <p className="text-sm font-bold text-stone-900 truncate">{user.full_name}</p>
                     <p className="text-xs text-stone-500 truncate">{user.email}</p>
                   </div>
-                </div>
+                </Link>
               ) : (
                 <Link
                   to="/login"

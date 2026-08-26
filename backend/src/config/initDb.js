@@ -8,8 +8,8 @@ const __dirname = path.dirname(__filename);
 
 export const initDb = async () => {
   try {
-    await pool.query("DROP SCHEMA public CASCADE");
-    await pool.query("CREATE SCHEMA public");
+    await pool.query("DROP SCHEMA IF EXISTS public CASCADE");
+    await pool.query("CREATE SCHEMA IF NOT EXISTS public");
     await pool.query("GRANT ALL ON SCHEMA public TO PUBLIC");
     console.log("Database wiped");
 

@@ -85,6 +85,13 @@ class Order {
       }
     }
 
+    // Dev guarantee: a fresh order must never be already expired.
+    // If leadBoundary is in the past (e.g. order for tonight 18:00 created
+    // at 15:30 -> lead 12:30 past), clamp to the normal bidding window.
+    if (expiresAt.getTime() < Date.now() + 60_000) {
+      expiresAt = new Date(Date.now() + bidWindowHours() * 3600_000);
+    }
+
     return expiresAt.toISOString();
   }
 
@@ -213,6 +220,9 @@ class Order {
       return ids.length;
     } catch (err) {
       await client.query("ROLLBACK");
+      // During dev wipe (DROP SCHEMA CASCADE) the tables briefly don't exist.
+      // Swallow that window so the 60s sweep + lazy sweeps don't log noise.
+      if (err.code === "42P01" || err.code === "3F000") return 0;
       throw err;
     } finally {
       client.release();

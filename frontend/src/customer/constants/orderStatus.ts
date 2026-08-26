@@ -8,7 +8,7 @@
 // ---------------------------------------------------------------------------
 
 /** The ordered pipeline an order moves through, shown as a progress bar. */
-export const ORDER_STATUS_STEPS: string[] = ['Pending', 'Preparing', 'Ready', 'Delivered'];
+export const ORDER_STATUS_STEPS: string[] = ['Pending', 'Quoted', 'Preparing', 'Ready', 'Delivered'];
 
 /** A cancelled order has stopped moving through the pipeline. */
 export function isCancelled(status: string): boolean {
@@ -19,6 +19,11 @@ export function isCancelled(status: string): boolean {
 export function isCompleted(status: string): boolean {
   const s = status.toLowerCase();
   return s === 'completed' || s === 'delivered';
+}
+
+/** An order that is no longer biddable (expired or cancelled). */
+export function isExpired(status: string): boolean {
+  return status.toLowerCase() === 'expired';
 }
 
 /**

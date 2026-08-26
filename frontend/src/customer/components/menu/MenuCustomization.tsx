@@ -37,7 +37,7 @@ import { ActiveRequests } from '../orders/ActiveRequests';
 export const MenuCustomization: React.FC = () => {
   // --- Data (from hooks) ---
   const { categories, items, loading, error } = useMenuData();
-  const { requests, setRequests } = useCustomerOrders();
+  const { requests, setRequests, refresh } = useCustomerOrders();
 
   // --- Local UI state ---
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
@@ -189,7 +189,9 @@ export const MenuCustomization: React.FC = () => {
 
         {/* View 3: the customer's orders (visible whenever no item is picked) */}
         <AnimatePresence mode="wait">
-          {!selectedFoodItem && <ActiveRequests key="requests-list" requests={requests} />}
+          {!selectedFoodItem && (
+            <ActiveRequests key="requests-list" requests={requests} onRefresh={refresh} />
+          )}
         </AnimatePresence>
       </div>
     </section>

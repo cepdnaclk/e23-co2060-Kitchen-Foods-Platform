@@ -66,11 +66,11 @@ export const ImageUploader = ({
   };
 
   const inputCls = isDark
-    ? "w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-200 outline-none focus:border-orange-500"
+    ? "w-full rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm text-stone-900 outline-none focus:border-brand-primary"
     : "w-full rounded-xl border border-slate-300 px-3 py-2 text-sm text-slate-700 outline-none focus:border-indigo-500";
 
   const linkCls = isDark
-    ? "text-xs font-medium text-slate-400 transition hover:text-orange-400"
+    ? "text-xs font-medium text-stone-500 transition hover:text-brand-primary"
     : "text-xs font-medium text-slate-500 transition hover:text-indigo-600";
 
   return (
@@ -80,7 +80,7 @@ export const ImageUploader = ({
         <div
           className={`h-20 w-20 flex-shrink-0 overflow-hidden rounded-xl border ${
             isDark
-              ? "border-slate-700 bg-slate-800"
+              ? "border-stone-200 bg-stone-100"
               : "border-slate-200 bg-slate-100"
           }`}
         >
@@ -97,7 +97,7 @@ export const ImageUploader = ({
             <div className="flex h-full w-full items-center justify-center">
               <span
                 className={`px-1 text-center text-[9px] font-semibold uppercase tracking-wide ${
-                  isDark ? "text-slate-500" : "text-slate-400"
+                  isDark ? "text-stone-400" : "text-slate-400"
                 }`}
               >
                 No image
@@ -120,7 +120,7 @@ export const ImageUploader = ({
             disabled={uploading}
             className={
               isDark
-                ? "inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 px-4 py-2 text-xs font-bold text-white transition hover:shadow-lg hover:shadow-orange-500/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+                ? "inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-brand-primary to-amber-500 px-4 py-2 text-xs font-bold text-white transition hover:shadow-lg hover:shadow-brand-primary/20 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
                 : "inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-indigo-700 disabled:cursor-not-allowed disabled:opacity-60"
             }
           >
@@ -151,7 +151,7 @@ export const ImageUploader = ({
       )}
 
       {error && (
-        <p className={`text-xs font-medium ${isDark ? "text-rose-400" : "text-rose-600"}`}>
+        <p className={`text-xs font-medium ${isDark ? "text-rose-600" : "text-rose-600"}`}>
           {error}
         </p>
       )}

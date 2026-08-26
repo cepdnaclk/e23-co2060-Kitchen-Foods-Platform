@@ -62,19 +62,26 @@ CREATE TABLE IF NOT EXISTS orders (
     total_price DECIMAL(10,2),
     delivery_date DATE,
     delivery_time VARCHAR(50),
-    status VARCHAR(20) CHECK (status IN ('Pending', 'Preparing', 'Ready', 'Completed', 'Cancelled', 'Delivered', 'Quoted', 'Paid')) DEFAULT 'Pending',
+    status VARCHAR(20) CHECK (status IN ('Pending', 'Preparing', 'Ready', 'Completed', 'Cancelled', 'Delivered', 'Quoted', 'Paid', 'Expired')) DEFAULT 'Pending',
+    -- Bidding deadline: the order stops accepting quotes once this passes.
+    expires_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- QUOTES TABLE (CHEF BIDS)
+-- One active quote per chef per order (unique_quote). Re-submitting updates
+-- the chef's existing bid while it is still 'Pending'; once a quote is
+-- 'Accepted' or 'Rejected' it is immutable.
 CREATE TABLE IF NOT EXISTS quotes (
     id VARCHAR(255) PRIMARY KEY,
-    order_id VARCHAR(255) REFERENCES orders(id) ON DELETE CASCADE,
-    chef_id VARCHAR(255) REFERENCES chefs(uid) ON DELETE CASCADE,
-    price DECIMAL(10,2) NOT NULL,
+    order_id VARCHAR(255) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+    chef_id VARCHAR(255) NOT NULL REFERENCES chefs(uid) ON DELETE CASCADE,
+    price DECIMAL(10,2) NOT NULL CHECK (price > 0),
     note TEXT,
-    is_accepted BOOLEAN DEFAULT FALSE,
-    submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fulfillment_time VARCHAR(50),
+    status VARCHAR(20) NOT NULL DEFAULT 'Pending' CHECK (status IN ('Pending', 'Accepted', 'Rejected')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT unique_quote UNIQUE (order_id, chef_id)
 );
 

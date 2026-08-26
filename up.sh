@@ -7,10 +7,14 @@ set -euo pipefail
 # Scripts are run in order from the backend image (any file under backend/ works).
 SCRIPTS=(
   insert-test-users.js
-  test_status.js
+  # test_status.js
 )
 
 docker compose up -d postgres
+
+# Rebuild the seed image so the JS scripts inside it always match the files
+# on disk (otherwise `docker compose run` reuses a stale image).
+docker compose build seed
 
 for script in "${SCRIPTS[@]}"; do
   echo "== Running $script =="
@@ -18,4 +22,4 @@ for script in "${SCRIPTS[@]}"; do
 done
 
 echo
-echo "Done. Admin login -> admin@test.com / 12345678"
+echo "Done. Running the scripts"

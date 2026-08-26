@@ -1,4 +1,5 @@
 import Order from "../models/order.model.js";
+import Quote from "../models/quote.model.js";
 import pool from "../config/db.js";
 
 export const createOrder = async (req, res, next) => {
@@ -69,6 +70,8 @@ export const claimOrder = async (req, res, next) => {
 export const getChefOrders = async (req, res, next) => {
   try {
     const { chefId } = req.params;
+    // Lazy expiry sweep: mark overdue Pending orders Expired before reading.
+    await Order.expireOverdue();
     const orders = await Order.findByChefId(chefId);
     res.json(orders);
   } catch (err) {
@@ -79,6 +82,8 @@ export const getChefOrders = async (req, res, next) => {
 export const getCustomerOrders = async (req, res, next) => {
   try {
     const { customerId } = req.params;
+    // Lazy expiry sweep: mark overdue Pending orders Expired before reading.
+    await Order.expireOverdue();
     const orders = await Order.findByCustomerId(customerId);
     res.json(orders);
   } catch (err) {
@@ -94,6 +99,43 @@ export const updateOrderStatus = async (req, res, next) => {
     if (!order) {
       return res.status(404).json({ error: "Order not found" });
     }
+    res.json(order);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Customer accepts a chef's quote. Atomically locks the order, marks the
+ * winning quote Accepted, rejects all competitors and moves the order to
+ * 'Quoted' (locked to the winning chef). See Quote.acceptQuote.
+ */
+export const acceptQuote = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { quoteId, customerId } = req.body;
+    if (!quoteId || !customerId) {
+      return res.status(400).json({ error: "quoteId and customerId are required" });
+    }
+    const result = await Quote.acceptQuote({ orderId, quoteId, customerId });
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Customer cancels an open (Pending) order. Atomically voids the order and
+ * rejects every active quote on it. See Order.cancelOrder.
+ */
+export const cancelOrder = async (req, res, next) => {
+  try {
+    const { orderId } = req.params;
+    const { customerId } = req.body;
+    if (!customerId) {
+      return res.status(400).json({ error: "customerId is required" });
+    }
+    const order = await Order.cancelOrder(orderId, customerId);
     res.json(order);
   } catch (err) {
     next(err);

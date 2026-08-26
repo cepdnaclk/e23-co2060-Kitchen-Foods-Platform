@@ -79,18 +79,20 @@ VALUES
 ON CONFLICT (id) DO NOTHING;
 
 -- ORDERS
-INSERT INTO orders (id, customer_id, meal_description, status)
+-- o1 has an accepted quote (status Quoted, locked to chef u4).
+-- o2 is still open for bidding (Pending, expires 6h from creation).
+INSERT INTO orders (id, customer_id, meal_description, status, chef_id, expires_at)
 VALUES
-('o1','u1','Vegetarian lunch for 5 people','Pending'),
-('o2','u2','Birthday dinner for 8 guests','Quoted')
+('o1','u1','Vegetarian lunch for 5 people','Quoted','u4', CURRENT_TIMESTAMP + INTERVAL '6 hours'),
+('o2','u2','Birthday dinner for 8 guests','Pending', NULL, CURRENT_TIMESTAMP + INTERVAL '6 hours')
 ON CONFLICT (id) DO NOTHING;
 
 -- QUOTES
-INSERT INTO quotes (id, order_id, chef_id, price, note, is_accepted)
+INSERT INTO quotes (id, order_id, chef_id, price, note, fulfillment_time, status)
 VALUES
-('q1','o1','u3',45.00,'Healthy vegetarian buffet',FALSE),
-('q2','o1','u4',40.00,'Rice and curry vegetarian set',TRUE),
-('q3','o2','u3',120.00,'Full birthday dinner menu',FALSE)
+('q1','o1','u3',45.00,'Healthy vegetarian buffet','13:00','Rejected'),
+('q2','o1','u4',40.00,'Rice and curry vegetarian set','12:30','Accepted'),
+('q3','o2','u3',120.00,'Full birthday dinner menu','19:00','Pending')
 ON CONFLICT (id) DO NOTHING;
 
 -- TRANSACTIONS

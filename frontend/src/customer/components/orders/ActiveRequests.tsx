@@ -13,9 +13,11 @@ import { OrderRequestCard } from './OrderRequestCard';
 
 interface ActiveRequestsProps {
   requests: Request[];
+  /** Called after a quote accept / order cancel so the list can reload. */
+  onRefresh?: () => void;
 }
 
-export const ActiveRequests: React.FC<ActiveRequestsProps> = ({ requests }) => (
+export const ActiveRequests: React.FC<ActiveRequestsProps> = ({ requests, onRefresh }) => (
   <motion.div
     initial={{ opacity: 0, y: 16 }}
     animate={{ opacity: 1, y: 0 }}
@@ -49,7 +51,7 @@ export const ActiveRequests: React.FC<ActiveRequestsProps> = ({ requests }) => (
     ) : (
       <div className="grid gap-6">
         {requests.map((request, index) => (
-          <OrderRequestCard key={request.id} request={request} index={index} />
+          <OrderRequestCard key={request.id} request={request} index={index} onRefresh={onRefresh} />
         ))}
       </div>
     )}

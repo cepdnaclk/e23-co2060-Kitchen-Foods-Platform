@@ -19,6 +19,21 @@ export interface BackendOrder {
   totalPrice?: number | string;
   status: string;
   mealDescription?: string;
+  /** Active (Pending) quote count — populated by the backend for feeds. */
+  quoteCount?: number;
+}
+
+/** A chef's bid on an order (from GET /quotes/order/:id). */
+export interface Quote {
+  id: string;
+  orderId: string;
+  chefId: string;
+  price: number;
+  note: string | null;
+  fulfillmentTime: string | null;
+  status: 'Pending' | 'Accepted' | 'Rejected';
+  chefName: string | null;
+  chefAvatar: string | null;
 }
 
 /** Payload sent to the backend when placing an order. */
@@ -44,7 +59,7 @@ function mapBackendOrder(o: BackendOrder): Request {
     guests: o.quantity || 1,
     budget: Number(o.totalPrice) || 0,
     status: o.status,
-    bids: 0,
+    bids: o.quoteCount || 0,
     location: 'Colombo',
     dietary: [],
     // The status is stashed inside the description so the order card can
@@ -92,6 +107,43 @@ export async function placeOrder(payload: PlaceOrderPayload): Promise<{ id: stri
     throw new Error(errorData.error || 'Failed to place order');
   }
   return (await res.json()) as { id: string };
+}
+
+/** All quotes on a single order (sorted by price, lowest first). */
+export async function fetchOrderQuotes(orderId: string): Promise<Quote[]> {
+  const res = await fetch(`${API_BASE_URL}/quotes/order/${orderId}`);
+  if (!res.ok) throw new Error('Failed to fetch quotes');
+  return (await res.json()) as Quote[];
+}
+
+/** Customer accepts a chef's quote — locks the order and rejects competitors. */
+export async function acceptQuote(
+  orderId: string,
+  quoteId: string,
+  customerId: string,
+): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/orders/${orderId}/accept`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ quoteId, customerId }),
+  });
+  if (!res.ok) {
+    const errorData = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(errorData.error || 'Failed to accept quote');
+  }
+}
+
+/** Customer cancels an open (Pending) order — voids all active quotes. */
+export async function cancelOrder(orderId: string, customerId: string): Promise<void> {
+  const res = await fetch(`${API_BASE_URL}/orders/${orderId}/cancel`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ customerId }),
+  });
+  if (!res.ok) {
+    const errorData = (await res.json().catch(() => ({}))) as { error?: string };
+    throw new Error(errorData.error || 'Failed to cancel order');
+  }
 }
 
 /** Fetch homepage impact statistics. */

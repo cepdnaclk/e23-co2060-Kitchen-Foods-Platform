@@ -14,6 +14,7 @@ const statusOptions: OrderStatus[] = [
   "Quoted",
   "Paid",
   "Completed",
+  "Expired",
 ];
 
 export const OrderManagement = () => {

@@ -4,10 +4,11 @@
 // Loads the logged-in customer's orders and keeps them fresh by polling the
 // backend every 30 seconds, so status changes appear while the user browses
 // the site. Also exposes setRequests so the menu section can prepend a
-// newly placed order without a refetch.
+// newly placed order without a refetch, and refresh so quote accept/cancel
+// actions can reload immediately.
 // ---------------------------------------------------------------------------
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { fetchCustomerOrders } from '../services/customerApi';
 import type { Request } from '../types';
 
@@ -28,30 +29,28 @@ function getStoredUserId(): string | null {
 
 export function useCustomerOrders() {
   const [requests, setRequests] = useState<Request[]>([]);
+  const userIdRef = useRef<string | null>(getStoredUserId());
 
-  useEffect(() => {
-    const userId = getStoredUserId();
+  const refresh = useCallback(async () => {
+    const userId = userIdRef.current;
     if (!userId) return; // not logged in — nothing to fetch
-
-    let active = true;
-
-    const load = async () => {
-      try {
-        const orders = await fetchCustomerOrders(userId);
-        if (active) setRequests(orders);
-      } catch (err) {
-        console.error('Error fetching customer orders:', err);
-      }
-    };
-
-    void load();
-    const interval = setInterval(load, POLL_INTERVAL_MS);
-
-    return () => {
-      active = false;
-      clearInterval(interval);
-    };
+    try {
+      const orders = await fetchCustomerOrders(userId);
+      setRequests(orders);
+    } catch (err) {
+      console.error('Error fetching customer orders:', err);
+    }
   }, []);
 
-  return { requests, setRequests };
+  useEffect(() => {
+    const userId = userIdRef.current;
+    if (!userId) return;
+
+    void refresh();
+    const interval = setInterval(refresh, POLL_INTERVAL_MS);
+
+    return () => clearInterval(interval);
+  }, [refresh]);
+
+  return { requests, setRequests, refresh };
 }

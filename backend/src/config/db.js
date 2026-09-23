@@ -17,6 +17,8 @@ const pool = new Pool({
   database: process.env.DB_NAME || "kitchen-foods",
   password: String(process.env.DB_PASSWORD || "zoom119"), // Keeps SCRAM happy by guaranteeing a string
   port: Number(process.env.DB_PORT || 5432),
+  // Azure Database for PostgreSQL enforces TLS; local dev leaves DB_SSL unset
+  ssl: process.env.DB_SSL === "true" ? { rejectUnauthorized: false } : undefined,
 });
 
 // testing connection

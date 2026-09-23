@@ -1,5 +1,6 @@
 # Ignore Visual Studio Code settings folder
 .vscode
+.zcode
 
 
 # Ignore node_modules folder

@@ -34,9 +34,7 @@ describe.runIf(dbAvailable)("bidding engine api", () => {
       expect(res.status).toBe(201);
       expect(res.body.id).toMatch(/^ORD-/);
       expect(res.body.status).toBe("Pending");
-      expect(new Date(res.body.expires_at).getTime()).toBeGreaterThan(
-        Date.now(),
-      );
+      expect(new Date(res.body.expiresAt).getTime()).toBeGreaterThan(Date.now());
     });
 
     it("rejects orders without a customerId", async () => {
@@ -324,15 +322,19 @@ describe.runIf(dbAvailable)("bidding engine api", () => {
   describe("expiry sweep", () => {
     it("marks overdue Pending orders Expired and voids their quotes", async () => {
       const pool = getPool();
-      const stale = await createOrderRow(getPool(), {
-        expiresInSeconds: -300,
-      });
+      // The order must be open for bidding when the quote is placed; it is
+      // backdated afterwards (the quote endpoint rejects expired orders).
+      const stale = await createOrderRow(getPool(), { expiresInSeconds: 3600 });
       const fresh = await createOrderRow(getPool(), { expiresInSeconds: 3600 });
       await request(app).post("/api/quotes").send({
         orderId: stale.id,
         chefId: "u-chef-1",
         price: 900,
       });
+      await pool.query(
+        "UPDATE orders SET expires_at = NOW() - INTERVAL '5 minutes' WHERE id = $1",
+        [stale.id],
+      );
 
       const res = await request(app).get("/api/orders/customer/u-cust-1");
       expect(res.status).toBe(200);

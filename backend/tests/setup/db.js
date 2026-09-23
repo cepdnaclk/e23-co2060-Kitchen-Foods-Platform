@@ -86,11 +86,18 @@ export async function truncateAll(pool) {
 }
 
 /**
- * Stable fixture users, mirroring insert-test-users.js. Re-inserting with
- * ON CONFLICT DO NOTHING keeps them idempotent.
+ * Stable fixture users, mirroring insert-test-users.js. The SQL seed file
+ * (02_seed.sql) also inserts alice@test.com / bob@test.com (as u1/u2 with
+ * unusable placeholder hashes), so evict those rows first — the tests need
+ * these emails to resolve to the fixture uids with a real password hash.
+ * Re-inserting with ON CONFLICT DO NOTHING keeps the rest idempotent.
  */
 export async function seedFixtureUsers(pool) {
   const passwordHash = await bcrypt.hash("password123", 10);
+
+  await pool.query(
+    `DELETE FROM users WHERE email IN ('alice@test.com', 'bob@test.com')`,
+  );
 
   await pool.query(
     `INSERT INTO users (uid, full_name, email, password_hash, role)
@@ -117,6 +124,20 @@ export async function seedFixtureUsers(pool) {
      ON CONFLICT (uid) DO NOTHING`,
     [passwordHash],
   );
+
+  // The SQL seed file also defines categories named 'Rice & Curry' and 'Other'
+  // (c1/c6, holding the seeded food items), and food_categories.name is UNIQUE.
+  // Drop the seed rows (and their items, blocked by ON DELETE RESTRICT) so the
+  // fixture categories below can own those names.
+  await pool.query(`
+    DELETE FROM food_items
+    WHERE category_id IN (
+      SELECT id FROM food_categories WHERE name IN ('Rice & Curry', 'Other')
+    );
+  `);
+  await pool.query(`
+    DELETE FROM food_categories WHERE name IN ('Rice & Curry', 'Other');
+  `);
 
   await pool.query(
     `INSERT INTO food_categories (id, name, description)

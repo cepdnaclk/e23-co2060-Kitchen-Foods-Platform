@@ -1,4 +1,5 @@
 import app from "./app.js";
+import pool from "./config/db.js";
 import { initDb } from "./config/initDb.js";
 import Order from "./models/order.model.js";
 

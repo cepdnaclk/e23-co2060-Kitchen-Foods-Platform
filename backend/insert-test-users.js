@@ -12,6 +12,9 @@ const pool = new Pool({
   database: process.env.DB_NAME || "yourdb",
   user: process.env.DB_USER || "youruser",
   password: process.env.DB_PASSWORD || "yourpassword",
+  ssl: process.env.DB_SSL === 'true' || process.env.NODE_ENV === 'production' 
+    ? { rejectUnauthorized: false } 
+    : false,
 });
 
 // IMPORTANT: uids are FIXED (not random) on purpose. The backend wipes the

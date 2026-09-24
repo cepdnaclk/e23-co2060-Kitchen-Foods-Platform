@@ -134,6 +134,7 @@ const PipelineColumn = ({
 
 export default function App() {
   const [orders, setOrders] = useState<Order[]>([]);
+  const [lastSynced, setLastSynced] = useState<Date>(new Date());
   const [profile, setProfile] = useState<ChefProfile>(() => {
     const userStr = localStorage.getItem("user");
     if (userStr) {
@@ -280,13 +281,14 @@ export default function App() {
         }));
 
         setOrders(transformedOrders);
+        setLastSynced(new Date());
       } catch (err) {
         console.error("Error fetching orders:", err);
       }
     };
 
     fetchOrders();
-    const interval = setInterval(fetchOrders, 15000);
+    const interval = setInterval(fetchOrders, 5000);
     return () => clearInterval(interval);
   }, [profile.id]);
 
@@ -304,7 +306,7 @@ export default function App() {
       }
     };
     fetchChefQuotes();
-    const interval = setInterval(fetchChefQuotes, 15000);
+    const interval = setInterval(fetchChefQuotes, 5000);
     return () => clearInterval(interval);
   }, [profile.id]);
 
@@ -695,8 +697,19 @@ export default function App() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-xl font-display font-bold text-stone-900 tracking-tight">Pipeline Control</h2>
-          <p className="text-xs text-stone-500 mt-0.5">Complete kitchen workflow pipeline</p>
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-xl font-display font-bold text-stone-900 tracking-tight">Pipeline Control</h2>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 text-[10px] font-bold uppercase tracking-widest">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Live · 5s
+            </span>
+          </div>
+          <p className="text-xs text-stone-400 mt-0.5">
+            Auto-refreshing · Last updated{' '}
+            <span className="font-medium text-stone-500">
+              {lastSynced.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            </span>
+          </p>
         </div>
         <div className="flex bg-white border border-stone-900/10 p-1 rounded-full self-start backdrop-blur">
           <button

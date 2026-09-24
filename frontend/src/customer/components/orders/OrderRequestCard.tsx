@@ -57,26 +57,44 @@ export const OrderRequestCard: React.FC<OrderRequestCardProps> = ({ request, ind
 
   const [quotes, setQuotes] = useState<Quote[] | null>(null);
   const [actionError, setActionError] = useState('');
-  const [isPaid, setIsPaid] = useState(false);
+  const [isPaid, setIsPaid] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(`order_paid_${request.id}`) === 'true';
+    } catch {
+      return false;
+    }
+  });
   const [paymentOpen, setPaymentOpen] = useState(false);
 
   // Load incoming quotes while the order is still open for bidding.
+  // Polls every 3 seconds so incoming chef bids appear live in real-time without manual refresh!
   useEffect(() => {
-    let active = true;
-    setQuotes(null);
-    setActionError('');
-    if (!isOpen) return;
+    if (!isOpen) {
+      setQuotes(null);
+      return;
+    }
 
-    fetchOrderQuotes(request.id)
-      .then((data) => {
-        if (active) setQuotes(data);
-      })
-      .catch(() => {
-        if (active) setQuotes([]);
-      });
+    let active = true;
+
+    const loadQuotes = async () => {
+      try {
+        const data = await fetchOrderQuotes(request.id);
+        if (active) {
+          setQuotes(data);
+        }
+      } catch {
+        if (active) {
+          setQuotes((prev) => prev ?? []);
+        }
+      }
+    };
+
+    void loadQuotes();
+    const interval = setInterval(loadQuotes, 3000);
 
     return () => {
       active = false;
+      clearInterval(interval);
     };
   }, [request.id, isOpen]);
 
@@ -192,10 +210,16 @@ export const OrderRequestCard: React.FC<OrderRequestCardProps> = ({ request, ind
           {/* Incoming quotes — only while the order is open for bidding */}
           {isOpen && (
             <div className="mt-8">
-              <h5 className="text-xs font-bold uppercase tracking-widest text-stone-400 mb-4 flex items-center gap-2">
-                <HandCoins size={14} className="text-brand-primary" />
-                Incoming Quotes
-              </h5>
+              <div className="flex items-center gap-2 mb-4">
+                <h5 className="text-xs font-bold uppercase tracking-widest text-stone-400 flex items-center gap-2">
+                  <HandCoins size={14} className="text-brand-primary" />
+                  Incoming Quotes
+                </h5>
+                <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 text-[9px] font-bold uppercase tracking-widest">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Live
+                </span>
+              </div>
 
               {quotes === null ? (
                 <div className="flex items-center gap-3 text-sm text-stone-400 py-4">
@@ -282,10 +306,10 @@ export const OrderRequestCard: React.FC<OrderRequestCardProps> = ({ request, ind
             </button>
           )}
           
-          {!isOpen && !cancelled && !completed && !expired && !isPaid && (
+          {displayStatus.toLowerCase() === 'quoted' && !isPaid && (
             <button
               onClick={() => setPaymentOpen(true)}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 transition-all shadow-md shadow-emerald-500/25"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 transition-all shadow-md shadow-emerald-500/25 animate-pulse"
             >
               💳 Pay Now
             </button>
@@ -313,6 +337,9 @@ export const OrderRequestCard: React.FC<OrderRequestCardProps> = ({ request, ind
       orderTitle={request.title}
       amount={request.budget}
       onSuccess={() => {
+        try {
+          localStorage.setItem(`order_paid_${request.id}`, 'true');
+        } catch {}
         setIsPaid(true);
         setPaymentOpen(false);
         onRefresh?.();

@@ -13,7 +13,7 @@ import { fetchCustomerOrders } from '../services/customerApi';
 import type { Request } from '../types';
 
 /** How often (ms) to re-fetch the customer's orders. */
-const POLL_INTERVAL_MS = 30_000;
+const POLL_INTERVAL_MS = 3_000;
 
 /** Read the stored customer record from localStorage (set at login). */
 function getStoredUserId(): string | null {

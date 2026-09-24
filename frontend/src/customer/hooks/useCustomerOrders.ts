@@ -33,9 +33,11 @@ export function useCustomerOrders() {
 
   const refresh = useCallback(async () => {
     const userId = userIdRef.current;
+    console.log('[useCustomerOrders] refresh called, userId:', userId);
     if (!userId) return; // not logged in — nothing to fetch
     try {
       const orders = await fetchCustomerOrders(userId);
+      console.log('[useCustomerOrders] fetched orders:', orders);
       setRequests(orders);
     } catch (err) {
       console.error('Error fetching customer orders:', err);

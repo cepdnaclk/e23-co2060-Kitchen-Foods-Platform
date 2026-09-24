@@ -29,15 +29,12 @@ function getStoredUserId(): string | null {
 
 export function useCustomerOrders() {
   const [requests, setRequests] = useState<Request[]>([]);
-  const userIdRef = useRef<string | null>(getStoredUserId());
 
   const refresh = useCallback(async () => {
-    const userId = userIdRef.current;
-    console.log('[useCustomerOrders] refresh called, userId:', userId);
+    const userId = getStoredUserId();
     if (!userId) return; // not logged in — nothing to fetch
     try {
       const orders = await fetchCustomerOrders(userId);
-      console.log('[useCustomerOrders] fetched orders:', orders);
       setRequests(orders);
     } catch (err) {
       console.error('Error fetching customer orders:', err);
@@ -45,7 +42,7 @@ export function useCustomerOrders() {
   }, []);
 
   useEffect(() => {
-    const userId = userIdRef.current;
+    const userId = getStoredUserId();
     if (!userId) return;
 
     void refresh();

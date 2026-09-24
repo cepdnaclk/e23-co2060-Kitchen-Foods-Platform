@@ -56,6 +56,7 @@ export const OrderRequestCard: React.FC<OrderRequestCardProps> = ({ request, ind
 
   const [quotes, setQuotes] = useState<Quote[] | null>(null);
   const [actionError, setActionError] = useState('');
+  const [isPaid, setIsPaid] = useState(false);
 
   // Load incoming quotes while the order is still open for bidding.
   useEffect(() => {
@@ -277,6 +278,22 @@ export const OrderRequestCard: React.FC<OrderRequestCardProps> = ({ request, ind
               <X size={13} /> Cancel Request
             </button>
           )}
+          
+          {!isOpen && !cancelled && !completed && !expired && !isPaid && (
+            <button
+              onClick={() => setIsPaid(true)}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 transition-all shadow-md shadow-emerald-500/25"
+            >
+              Pay Now
+            </button>
+          )}
+          
+          {isPaid && (
+            <span className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-emerald-600 bg-emerald-50 border border-emerald-200">
+              <Check size={16} /> Paid
+            </span>
+          )}
+
           <button
             className="w-12 h-12 rounded-full bg-stone-50 border border-stone-100 flex items-center justify-center text-stone-400 hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all group-hover:scale-105 shadow-sm"
             aria-label="View order details"

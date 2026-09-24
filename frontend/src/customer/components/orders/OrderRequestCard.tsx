@@ -26,6 +26,7 @@ import {
   type Quote,
 } from '../../services/customerApi';
 import { OrderProgressTracker } from './OrderProgressTracker';
+import { PaymentGateway } from '../payment/PaymentGateway';
 
 interface OrderRequestCardProps {
   request: Request;
@@ -57,6 +58,7 @@ export const OrderRequestCard: React.FC<OrderRequestCardProps> = ({ request, ind
   const [quotes, setQuotes] = useState<Quote[] | null>(null);
   const [actionError, setActionError] = useState('');
   const [isPaid, setIsPaid] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
 
   // Load incoming quotes while the order is still open for bidding.
   useEffect(() => {
@@ -118,6 +120,7 @@ export const OrderRequestCard: React.FC<OrderRequestCardProps> = ({ request, ind
   }, [request.id, onRefresh]);
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -281,10 +284,10 @@ export const OrderRequestCard: React.FC<OrderRequestCardProps> = ({ request, ind
           
           {!isOpen && !cancelled && !completed && !expired && !isPaid && (
             <button
-              onClick={() => setIsPaid(true)}
+              onClick={() => setPaymentOpen(true)}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full text-sm font-bold text-white bg-emerald-500 hover:bg-emerald-600 transition-all shadow-md shadow-emerald-500/25"
             >
-              Pay Now
+              💳 Pay Now
             </button>
           )}
           
@@ -303,5 +306,19 @@ export const OrderRequestCard: React.FC<OrderRequestCardProps> = ({ request, ind
         </div>
       </div>
     </motion.div>
+
+    {/* Payment gateway modal */}
+    <PaymentGateway
+      open={paymentOpen}
+      orderTitle={request.title}
+      amount={request.budget}
+      onSuccess={() => {
+        setIsPaid(true);
+        setPaymentOpen(false);
+        onRefresh?.();
+      }}
+      onClose={() => setPaymentOpen(false)}
+    />
+  </>
   );
 };

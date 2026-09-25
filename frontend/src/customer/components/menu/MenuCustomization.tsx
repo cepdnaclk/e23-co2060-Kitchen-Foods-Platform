@@ -92,7 +92,11 @@ export const MenuCustomization: React.FC = () => {
 
     const orderPayload = {
       customerId: user.uid,
-      chefId: selectedFoodItem?.chefId ?? null,
+      // NOTE: chefId is intentionally omitted here. Sending the food item's
+      // creator as chefId locks the order to that chef and prevents them (and
+      // everyone else) from bidding through the normal quote flow.  The
+      // backend assigns chefId only when a quote is accepted.
+      chefId: null,
       foodItemId: selectedFoodItem?.id,
       quantity: data.guests || 1,
       totalPrice: data.budget || (selectedFoodItem?.price || 0) * (data.guests || 1),

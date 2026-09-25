@@ -13,7 +13,7 @@ import { fetchCustomerOrders } from '../services/customerApi';
 import type { Request } from '../types';
 
 /** How often (ms) to re-fetch the customer's orders. */
-const POLL_INTERVAL_MS = 30_000;
+const POLL_INTERVAL_MS = 3_000;
 
 /** Read the stored customer record from localStorage (set at login). */
 function getStoredUserId(): string | null {
@@ -29,10 +29,9 @@ function getStoredUserId(): string | null {
 
 export function useCustomerOrders() {
   const [requests, setRequests] = useState<Request[]>([]);
-  const userIdRef = useRef<string | null>(getStoredUserId());
 
   const refresh = useCallback(async () => {
-    const userId = userIdRef.current;
+    const userId = getStoredUserId();
     if (!userId) return; // not logged in — nothing to fetch
     try {
       const orders = await fetchCustomerOrders(userId);
@@ -43,7 +42,7 @@ export function useCustomerOrders() {
   }, []);
 
   useEffect(() => {
-    const userId = userIdRef.current;
+    const userId = getStoredUserId();
     if (!userId) return;
 
     void refresh();

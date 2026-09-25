@@ -68,6 +68,7 @@ What was achieved, future developments, commercialization plans (will be added l
 
 - [Project Repository](https://github.com/cepdnaclk/e23-co2060-Kitchen-Foods-Platform){:target="_blank"}
 - [Project Page](https://cepdnaclk.github.io/e23-co2060-Kitchen-Foods-Platform){:target="_blank"}
+- [User & Chef Manual](./USER_MANUAL.md)
 - [Department of Computer Engineering](http://www.ce.pdn.ac.lk/)
 - [University of Peradeniya](https://eng.pdn.ac.lk/)
 

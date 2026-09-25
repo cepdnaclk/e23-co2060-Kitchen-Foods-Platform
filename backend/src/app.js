@@ -54,6 +54,16 @@ app.use(
   }),
 );
 
+// Unmatched routes must answer JSON, never HTML — clients parse responses
+// with response.json() and an HTML body throws a parse error.
+app.use((req, res) => {
+  res.status(404).json({
+    status: "error",
+    code: 404,
+    message: `Cannot ${req.method} ${req.path}`,
+  });
+});
+
 // Error handling middleware - should be after all routes
 app.use(errorHandler);
 

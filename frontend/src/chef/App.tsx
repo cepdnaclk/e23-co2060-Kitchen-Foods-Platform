@@ -26,7 +26,6 @@ import {
   AlertTriangle,
   X,
   ChefHat,
-  Sparkles,
   ArrowRight,
   Trash2,
   Package,
@@ -495,7 +494,7 @@ export default function App() {
   const trendOf = (value: number) =>
     value !== 0 ? { value: Math.abs(value), isPositive: value > 0 } : undefined;
 
-  // Search — filters orders and menu items across every view
+  // Search â€” filters orders and menu items across every view
   const q = searchQuery.trim().toLowerCase();
   const matchesOrder = (o: Order) =>
     !q ||
@@ -521,7 +520,7 @@ export default function App() {
     .slice(0, 5);
 
   const viewSubtitles: Record<string, string> = {
-    Dashboard: `Welcome back to the kitchen, ${profile.name.split(' ')[0] || 'Chef'} — here's what's happening today`,
+    Dashboard: `Welcome back to the kitchen, ${profile.name.split(' ')[0] || 'Chef'} â€” here's what's happening today`,
     Orders: 'Manage the complete kitchen workflow pipeline',
     'Menu Items': 'Curate the dishes you offer on the platform',
     Profile: 'Your public chef identity and kitchen story',
@@ -547,149 +546,150 @@ export default function App() {
   );
 
   const renderDashboard = () => (
-    <div className="space-y-8">
-      {/* Welcome banner */}
-      <div className="relative overflow-hidden chef-card rounded-3xl p-6 md:p-8">
-        <div className="pointer-events-none absolute -top-20 -right-20 w-72 h-72 bg-brand-primary/15 rounded-full blur-3xl chef-float-slow" />
-        <div className="pointer-events-none absolute -bottom-24 -left-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl" />
-        <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <span className="inline-flex items-center gap-1.5 chef-chip bg-brand-primary/10 text-brand-primary border-brand-primary/30">
-              <Sparkles size={11} /> Today's Kitchen
+    <div className="space-y-5">
+      {/* Compact welcome status bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 px-5 rounded-2xl bg-white/70 border border-stone-900/08 backdrop-blur shadow-sm">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="w-2 h-2 rounded-full bg-amber-500 shrink-0" />
+          <p className="text-sm font-medium text-stone-700 min-w-0">
+            <span className="font-bold text-stone-900">Good to see you, {firstName}</span>
+            {' | '}
+            <span className="text-stone-500">
+              <span className="font-bold text-brand-primary">{pendingColumn.length}</span> new order{pendingColumn.length === 1 ? '' : 's'} awaiting confirmation
+              {' · '}
+              <span className="font-bold text-stone-700">{activeOrders.length}</span> active in pipeline
             </span>
-            <h2 className="mt-3 text-2xl md:text-3xl font-display font-bold text-stone-900 tracking-tight">
-              Good to see you, {firstName} <ChefHat size={26} className="inline text-brand-primary -mt-1" />
-            </h2>
-            <p className="mt-1.5 text-sm text-stone-500">
-              You have <span className="font-bold text-brand-primary">{pendingColumn.length}</span> new order{pendingColumn.length === 1 ? '' : 's'} awaiting confirmation ·{' '}
-              <span className="font-bold text-stone-900">{activeOrders.length}</span> active in the pipeline
-            </p>
+          </p>
+        </div>
+        <div className="flex gap-2.5 shrink-0">
+          <button
+            onClick={() => setCurrentView('Orders')}
+            className="px-4 py-2 bg-white border border-stone-300 text-stone-700 hover:text-brand-primary hover:border-brand-primary/50 rounded-lg text-xs font-bold transition-all whitespace-nowrap"
+          >
+            Open Pipeline
+          </button>
+          <button
+            onClick={() => { setNewItemImageUrl(''); setIsAddItemModalOpen(true); }}
+            className="px-4 py-2 bg-brand-primary text-white rounded-lg text-xs font-bold hover:shadow-lg hover:shadow-brand-primary/30 hover:bg-brand-primary/90 active:scale-95 transition-all flex items-center gap-1.5 whitespace-nowrap"
+          >
+            <Plus size={14} /> Add Dish
+          </button>
+        </div>
+      </div>
+
+      {/* Stats Cards + Earnings Chart — side by side */}
+      <div className="grid grid-cols-1 xl:grid-cols-5 gap-5 items-stretch">
+        {/* 4 Stats cards in a 2×2 grid */}
+        <div className="xl:col-span-3 grid grid-cols-2 gap-4">
+          <StatsCard
+            label="Total Earnings"
+            value={totalEarnings}
+            prefix="Rs. "
+            icon={DollarSign}
+            color="emerald"
+            trend={trendOf(earningsTrend)}
+          />
+          <StatsCard
+            label="Total Orders"
+            value={totalOrdersCount}
+            icon={ShoppingBag}
+            color="orange"
+            trend={trendOf(ordersTrend)}
+          />
+          <StatsCard
+            label="Completed"
+            value={deliveredCount}
+            icon={CheckCircle}
+            color="amber"
+          />
+          <StatsCard
+            label="Active Orders"
+            value={activeOrders.length}
+            icon={Clock}
+            color="blue"
+          />
+        </div>
+
+        {/* Earnings chart — compact, takes right 2/5 */}
+        <div className="xl:col-span-2 chef-card rounded-2xl p-5 relative overflow-hidden flex flex-col">
+          <div className="pointer-events-none absolute top-0 right-0 w-40 h-40 bg-brand-primary/5 rounded-full blur-2xl" />
+          <div className="relative flex items-center justify-between mb-1">
+            <div>
+              <h2 className="text-sm font-bold text-stone-900 tracking-tight">
+                Earnings Over Time
+                <span className="ml-2 text-[10px] font-normal text-stone-400">(Last 7 days)</span>
+              </h2>
+            </div>
+            <span className="inline-flex items-center gap-1.5 chef-chip bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              LIVE
+            </span>
           </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => setCurrentView('Orders')}
-              className="px-5 py-2.5 bg-white border border-stone-300 text-stone-700 hover:text-brand-primary hover:border-brand-primary/50 rounded-full text-xs font-bold transition-all"
-            >
-              Open Pipeline
-            </button>
-            <button
-              onClick={() => { setNewItemImageUrl(''); setIsAddItemModalOpen(true); }}
-              className="px-5 py-2.5 bg-brand-primary text-white rounded-full text-xs font-bold hover:shadow-lg hover:shadow-brand-primary/30 hover:bg-brand-primary/90 active:scale-95 transition-all flex items-center gap-2"
-            >
-              <Plus size={15} /> Add Dish
-            </button>
+          <div className="flex-1 min-h-[160px]">
+            <EarningsChart data={earningsHistory} />
           </div>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <StatsCard
-          label="Total Earnings"
-          value={totalEarnings}
-          prefix="Rs. "
-          icon={DollarSign}
-          color="emerald"
-          trend={trendOf(earningsTrend)}
-        />
-        <StatsCard
-          label="Total Orders"
-          value={totalOrdersCount}
-          icon={ShoppingBag}
-          color="orange"
-          trend={trendOf(ordersTrend)}
-        />
-        <StatsCard
-          label="Completed Orders"
-          value={deliveredCount}
-          icon={CheckCircle}
-          color="amber"
-        />
-        <StatsCard
-          label="Active Orders"
-          value={activeOrders.length}
-          icon={Clock}
-          color="blue"
-        />
-      </div>
-
-      {/* Earnings + Pipeline */}
-      <div className="space-y-8">
-        <section className="p-6 chef-card rounded-3xl relative overflow-hidden">
-          <div className="pointer-events-none absolute top-0 right-0 w-64 h-64 bg-brand-primary/5 rounded-full blur-3xl" />
-          <div className="relative flex items-center justify-between mb-2">
-            <div>
-              <h2 className="text-lg font-display font-bold text-stone-900 tracking-tight">Earnings Over Time</h2>
-              <p className="text-xs text-stone-500 mt-0.5">Track your daily income — last 7 days</p>
-            </div>
-            <span className="inline-flex items-center gap-1.5 chef-chip bg-emerald-500/10 text-emerald-600 border-emerald-500/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live
-            </span>
+      {/* Active Orders Pipeline */}
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2.5">
+            <h2 className="text-base font-bold text-stone-900 tracking-tight">Active Orders Pipeline</h2>
+            <span className="text-xs text-stone-500">({activeOrders.length} active)</span>
           </div>
-          <EarningsChart data={earningsHistory} />
-        </section>
+          <button
+            onClick={() => setCurrentView('Orders')}
+            className="text-xs font-bold text-brand-primary hover:text-brand-primary/80 flex items-center gap-1 px-3 py-1.5 bg-brand-primary/10 rounded-full transition-all border border-brand-primary/20"
+          >
+            Full Pipeline <ChevronRight size={13} />
+          </button>
+        </div>
 
-        {/* Mini Kanban Row */}
-        <section>
-          <div className="flex items-center justify-between mb-5">
-            <div>
-              <h2 className="text-lg font-display font-bold text-stone-900 tracking-tight">Interactive Pipeline</h2>
-              <p className="text-xs text-stone-500 mt-0.5">Advance orders by clicking their action button</p>
-            </div>
-            <button
-              onClick={() => setCurrentView('Orders')}
-              className="text-xs font-bold text-brand-primary hover:text-brand-primary/80 flex items-center gap-1.5 px-3 py-2 bg-brand-primary/10 rounded-full transition-all border border-brand-primary/25"
-            >
-              Expand View <ChevronRight size={14} />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <PipelineColumn
-              title="Open Orders"
-              count={pendingColumn.length}
-              dotClass="bg-amber-500 shadow-amber-500/50"
-              icon={AlertCircle}
-              emptyIcon={ShoppingBag}
-              emptyText="No open orders"
-              orders={filteredPending.slice(0, 3)}
-              moreCount={Math.max(0, filteredPending.length - 3)}
-              onShowAll={() => setCurrentView('Orders')}
-              onStatusChange={handleStatusChange}
-              onViewDetails={setSelectedOrderForModal}
-              onBid={setBidOrder}
-              myQuoteFor={myQuoteFor}
-            />
-            <PipelineColumn
-              title="Cooking"
-              count={preparingColumn.length}
-              dotClass="bg-blue-500 shadow-blue-500/50"
-              icon={ChefHat}
-              emptyIcon={Utensils}
-              emptyText="Nothing on the stove"
-              orders={filteredPreparing.slice(0, 3)}
-              moreCount={Math.max(0, filteredPreparing.length - 3)}
-              onShowAll={() => setCurrentView('Orders')}
-              onStatusChange={handleStatusChange}
-              onViewDetails={setSelectedOrderForModal}
-            />
-            <PipelineColumn
-              title="Ready"
-              count={readyColumn.length}
-              dotClass="bg-emerald-500 shadow-emerald-500/50"
-              icon={Package}
-              emptyIcon={CheckCircle}
-              emptyText="Ready list is empty"
-              orders={filteredReady.slice(0, 3)}
-              moreCount={Math.max(0, filteredReady.length - 3)}
-              onShowAll={() => setCurrentView('Orders')}
-              onStatusChange={handleStatusChange}
-              onViewDetails={setSelectedOrderForModal}
-            />
-          </div>
-        </section>
-      </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <PipelineColumn
+            title="Open Orders"
+            count={pendingColumn.length}
+            dotClass="bg-amber-500 shadow-amber-500/50"
+            icon={AlertCircle}
+            emptyIcon={ShoppingBag}
+            emptyText="No open orders"
+            orders={filteredPending.slice(0, 3)}
+            moreCount={Math.max(0, filteredPending.length - 3)}
+            onShowAll={() => setCurrentView('Orders')}
+            onStatusChange={handleStatusChange}
+            onViewDetails={setSelectedOrderForModal}
+            onBid={setBidOrder}
+            myQuoteFor={myQuoteFor}
+          />
+          <PipelineColumn
+            title="Cooking"
+            count={preparingColumn.length}
+            dotClass="bg-blue-500 shadow-blue-500/50"
+            icon={ChefHat}
+            emptyIcon={Utensils}
+            emptyText="Nothing on the stove"
+            orders={filteredPreparing.slice(0, 3)}
+            moreCount={Math.max(0, filteredPreparing.length - 3)}
+            onShowAll={() => setCurrentView('Orders')}
+            onStatusChange={handleStatusChange}
+            onViewDetails={setSelectedOrderForModal}
+          />
+          <PipelineColumn
+            title="Ready"
+            count={readyColumn.length}
+            dotClass="bg-emerald-500 shadow-emerald-500/50"
+            icon={Package}
+            emptyIcon={CheckCircle}
+            emptyText="Ready list is empty"
+            orders={filteredReady.slice(0, 3)}
+            moreCount={Math.max(0, filteredReady.length - 3)}
+            onShowAll={() => setCurrentView('Orders')}
+            onStatusChange={handleStatusChange}
+            onViewDetails={setSelectedOrderForModal}
+          />
+        </div>
+      </section>
     </div>
   );
 
@@ -701,11 +701,11 @@ export default function App() {
             <h2 className="text-xl font-display font-bold text-stone-900 tracking-tight">Pipeline Control</h2>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 text-[10px] font-bold uppercase tracking-widest">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Live · 5s
+              Live Â· 5s
             </span>
           </div>
           <p className="text-xs text-stone-400 mt-0.5">
-            Auto-refreshing · Last updated{' '}
+            Auto-refreshing Â· Last updated{' '}
             <span className="font-medium text-stone-500">
               {lastSynced.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
             </span>
@@ -1044,7 +1044,7 @@ export default function App() {
               <div className="space-y-3">
                 <h3 className="text-[10px] font-bold text-stone-500 uppercase tracking-[0.16em]">Kitchen bio</h3>
                 <p className="text-stone-600 leading-relaxed text-sm italic font-medium">
-                  "{profile.bio || 'No bio yet — add one to tell customers about your kitchen.'}"
+                  "{profile.bio || 'No bio yet â€” add one to tell customers about your kitchen.'}"
                 </p>
               </div>
             </div>
@@ -1150,10 +1150,7 @@ export default function App() {
         activeCount={activeOrders.length}
       />
 
-      <main className={cn(
-        "flex-1 p-6 md:p-8 overflow-y-auto transition-all duration-300 lg:pl-8 lg:pr-8",
-        isSidebarOpen ? "lg:ml-64" : "ml-0"
-      )}>
+      <main className="flex-1 p-6 md:p-8 overflow-y-auto lg:ml-64">
         <NewOrderToast
           isVisible={showToast}
           onClose={() => setShowToast(false)}
@@ -1211,7 +1208,7 @@ export default function App() {
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-stone-500 uppercase tracking-[0.14em]">Category</label>
                     <select name="category" required className="chef-input">
-                      <option value="">— Select a category —</option>
+                      <option value="">â€” Select a category â€”</option>
                       {categories.map(cat => (
                         <option key={cat.id} value={cat.id}>{cat.name}</option>
                       ))}
@@ -1366,7 +1363,7 @@ export default function App() {
                               <div className="min-w-0 flex-1">
                                 <p className="text-xs font-bold text-stone-800 truncate font-mono">{o.id}</p>
                                 <p className="text-[10px] text-stone-500 truncate mt-0.5">
-                                  {o.customerName} · {o.items[0]?.name}
+                                  {o.customerName} Â· {o.items[0]?.name}
                                 </p>
                               </div>
                               <span className="text-[9px] text-stone-400 shrink-0 group-hover:text-stone-500">

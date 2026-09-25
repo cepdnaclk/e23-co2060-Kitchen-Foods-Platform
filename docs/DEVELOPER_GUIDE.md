@@ -58,8 +58,7 @@ graph TB
         UP[("uploads/ volume<br/>image files")]
     end
 
-    UI -->|"fetch/axios"||"Vite proxy in dev<br/>nginx in prod"| RT
-    RT --> MW
+    UI -->|"fetch / axios<br/>(Vite proxy in dev · nginx in prod)"| RT
     RT --> PG
     RT --> UP
     UI -->|"GET /uploads/*"| MW
@@ -727,15 +726,21 @@ graph TB
     A3 --> A5["/admin/orders"]
     A3 --> A6["/admin/food"]
     A1 --> A7["/admin/* unknown → redirect dashboard"]
-    A3 & A4 & A5 & A6 -.-> PR["ProtectedRoute<br/>no token → /admin/login"]
+    A3 -.-> PR["ProtectedRoute<br/>no token → /admin/login"]
+    A4 -.-> PR
+    A5 -.-> PR
+    A6 -.-> PR
 
     C["/* → CustomerApp"] --> C1["/ — Layout + Home"]
     C1 --> C2["/impact"]
     C1 --> C3["/profile — soft redirect"]
     C1 --> C4["/login — no layout"]
-    C1 & C2 & C3 & C4 -.-> SPL["mounted only after<br/>useStats resolves (~2.5s)"]
+    C1 -.-> SPL["mounted only after<br/>useStats resolves (~2.5s)"]
+    C2 -.-> SPL
+    C3 -.-> SPL
+    C4 -.-> SPL
 
-    CH["/chef, /chef/* → ChefApp"] --> CH1["useState('Dashboard'|'Orders'|<br/>'Menu Items'|'Profile'|'Settings')"]
+    CH["/chef, /chef/* → ChefApp"] --> CH1["useState string:<br/>Dashboard · Orders · Menu Items<br/>Profile · Settings"]
 ```
 
 | URL | Component | Section | Guard |

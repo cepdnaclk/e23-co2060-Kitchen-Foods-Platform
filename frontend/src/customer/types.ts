@@ -19,6 +19,8 @@ export interface Request {
   description: string;
   /** Optional time-of-day chosen by the customer (e.g. "18:30"). */
   deliveryTime?: string;
+  clientLatitude?: number;
+  clientLongitude?: number;
 }
 
 /** A food category, e.g. "Rice & Curry", "Desserts". */

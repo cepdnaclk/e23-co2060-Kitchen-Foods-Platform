@@ -29,6 +29,8 @@ class Order {
     foodItemName,
     expiresAt = null,
     quoteCount = 0,
+    clientLatitude = null,
+    clientLongitude = null
   ) {
     this.id = id;
     this.customerId = customerId;
@@ -45,6 +47,8 @@ class Order {
     this.foodItemName = foodItemName;
     this.expiresAt = expiresAt;
     this.quoteCount = quoteCount;
+    this.clientLatitude = clientLatitude !== null && clientLatitude !== undefined ? Number(clientLatitude) : null;
+    this.clientLongitude = clientLongitude !== null && clientLongitude !== undefined ? Number(clientLongitude) : null;
   }
 
   static mapRow(row) {
@@ -62,6 +66,8 @@ class Order {
       row.delivery_time,
       row.customer_name,
       row.food_item_name,
+      row.client_latitude,
+      row.client_longitude,
       row.expires_at,
       row.quote_count ?? 0,
     );
@@ -104,14 +110,17 @@ class Order {
     totalPrice,
     deliveryDate,
     deliveryTime,
+    clientLatitude = null,
+    clientLongitude = null,
   }) {
     const id = `ORD-${uuidv4().substring(0, 8).toUpperCase()}`;
     const expiresAt = Order.computeExpiry(deliveryDate, deliveryTime);
     const result = await pool.query(
       `INSERT INTO orders (
         id, customer_id, meal_description, food_item_id, chef_id,
-        quantity, total_price, delivery_date, delivery_time, expires_at
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        quantity, total_price, delivery_date, delivery_time, expires_at,
+        client_latitude, client_longitude
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10, $11)
       RETURNING *`,
       [
         id,
@@ -124,6 +133,8 @@ class Order {
         deliveryDate,
         deliveryTime,
         expiresAt,
+        clientLatitude,
+        clientLongitude,
       ],
     );
 
@@ -158,8 +169,8 @@ class Order {
   static async claimOrder(id, chefId) {
     const result = await pool.query(
       `UPDATE orders
-       SET chef_id = $1, status = 'Preparing'
-       WHERE id = $2 AND status = 'Pending'
+       SET chef_id = COALESCE($1, chef_id), status = 'Preparing'
+       WHERE id = $2 AND (status = 'Pending' OR status = 'Quoted')
        RETURNING *`,
       [chefId, id],
     );

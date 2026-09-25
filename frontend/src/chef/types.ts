@@ -28,6 +28,8 @@ export interface ChefQuote {
   orderDescription: string | null;
   deliveryDate: string | null;
   deliveryTime: string | null;
+  clientLatitude?: number | null;
+  clientLongitude?: number | null;
 }
 
 export interface ChefStats {
@@ -46,4 +48,6 @@ export interface ChefProfile {
   location: string;
   bio: string;
   email?: string;
+  latitude?: number | null;
+  longitude?: number | null;
 }

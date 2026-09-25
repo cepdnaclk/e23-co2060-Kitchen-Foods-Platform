@@ -4,10 +4,13 @@ import {
   getUserById,
   updateUser,
   deleteUser,
+  updateUserLocation,
 } from "../controllers/user.controller.js";
 import { verifyToken } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
+
+router.patch("/:uid/location", updateUserLocation);
 
 router.use(verifyToken);
 

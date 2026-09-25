@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Order } from '../types';
+<<<<<<< HEAD
 import { Clock, CheckCircle2, ChefHat, Package, AlertCircle, ArrowRight, Eye, HandCoins, XCircle } from 'lucide-react';
+=======
+import { Clock, CheckCircle2, ChefHat, Package, AlertCircle, ArrowRight, Eye, MapPin } from 'lucide-react';
+>>>>>>> 8e145ed (Add location validation feature using OpenStreetMap)
 import { motion } from 'motion/react';
 
 interface OrderCardProps {
@@ -168,14 +172,39 @@ export const OrderCard = ({ order, onStatusChange, onViewDetails, onBid, myQuote
       </div>
 
       {order.description && (
+<<<<<<< HEAD
         <div className="mb-4 p-2.5 bg-stone-100/80 border border-stone-900/10 rounded-xl text-[11px] text-stone-500">
           <span className="font-bold text-stone-700 block mb-0.5">Note:</span>
+=======
+        <div className="mb-3 p-2.5 bg-slate-950/50 border border-slate-800/80 rounded-xl text-[11px] text-slate-400">
+          <span className="font-bold text-slate-300 block mb-0.5">Note:</span>
+>>>>>>> 8e145ed (Add location validation feature using OpenStreetMap)
           <p className="line-clamp-2 italic">"{order.description}"</p>
         </div>
       )}
 
+<<<<<<< HEAD
       {/* Footer */}
       <div className="pt-1 flex items-center justify-between gap-3">
+=======
+      {order.clientLatitude != null && order.clientLongitude != null && (
+        <div className="mb-3 px-2.5 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-between text-[11px]">
+          <span className="text-emerald-400 font-semibold flex items-center gap-1">
+            <MapPin size={12} /> Client GPS verified (≤10km)
+          </span>
+          {onViewDetails && (
+            <button
+              onClick={() => onViewDetails(order)}
+              className="text-orange-400 hover:text-orange-300 font-bold underline cursor-pointer text-[10px]"
+            >
+              View Map
+            </button>
+          )}
+        </div>
+      )}
+
+      <div className="pt-2 flex items-center justify-between">
+>>>>>>> 8e145ed (Add location validation feature using OpenStreetMap)
         <div className="text-xs">
           <span className="text-stone-500 font-medium">Total:</span>
           <span className="ml-1.5 font-display font-bold text-stone-900">Rs. {order.total.toLocaleString()}</span>

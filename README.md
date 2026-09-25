@@ -69,3 +69,7 @@ cd backend && DB_PORT=5433 npm test
 ### Deployment
 
 The deployed site can be found at https://e23kitchenfood.up.railway.app/
+
+## Documentation & Manuals
+
+- 📖 **[User & Chef Manual](docs/USER_MANUAL.md)**: Comprehensive step-by-step user guide for both Customers and Home Chefs, including order customization, GPS-based 10km radius checks, dish catalog management, and interactive Leaflet map delivery tracking.

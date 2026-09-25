@@ -55,6 +55,19 @@ export const userLogin = async (req, res) => {
       { expiresIn: "1d" },
     );
 
+    let chefLatitude = null;
+    let chefLongitude = null;
+    if (user.role === "Chef") {
+      const chefQuery = await (await import("../config/db.js")).default.query(
+        "SELECT latitude, longitude FROM chefs WHERE uid = $1",
+        [user.uid]
+      );
+      if (chefQuery.rows.length > 0) {
+        chefLatitude = chefQuery.rows[0].latitude != null ? Number(chefQuery.rows[0].latitude) : null;
+        chefLongitude = chefQuery.rows[0].longitude != null ? Number(chefQuery.rows[0].longitude) : null;
+      }
+    }
+
     res.json({
       message: "Logged in successfully",
       token,
@@ -64,6 +77,8 @@ export const userLogin = async (req, res) => {
         email: user.email,
         role: user.role,
         approval_status: user.approval_status,
+        latitude: chefLatitude,
+        longitude: chefLongitude,
       },
     });
   } catch (err) {

@@ -103,6 +103,8 @@ export const MenuCustomization: React.FC = () => {
       deliveryDate: data.date,
       deliveryTime: data.deliveryTime || 'ASAP',
       mealDescription: data.description || `Order for ${selectedFoodItem?.name}`,
+      clientLatitude: data.clientLatitude,
+      clientLongitude: data.clientLongitude,
     };
 
     try {

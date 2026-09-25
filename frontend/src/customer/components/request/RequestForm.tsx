@@ -7,8 +7,8 @@
 // field components and serializes the result into a Partial<Request>.
 // ---------------------------------------------------------------------------
 
-import React, { useEffect, useRef } from 'react';
-import { AlertCircle, MessageSquare, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { AlertCircle, MessageSquare, X, MapPin, Loader2 } from 'lucide-react';
 import type { Request } from '../../types';
 import { useRequestForm } from '../../hooks/useRequestForm';
 import { PortionSelector } from './PortionSelector';
@@ -28,14 +28,51 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
   const formRef = useRef<HTMLDivElement>(null);
   const { formData, setField } = useRequestForm();
 
-  // Bring the form into view whenever it mounts (it appears below the fold).
+  const [clientLocation, setClientLocation] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [locationStatus, setLocationStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [locationError, setLocationError] = useState<string | null>(null);
+
+  const fetchLocation = () => {
+    setLocationStatus('loading');
+    setLocationError(null);
+    if (!navigator.geolocation) {
+      setLocationStatus('error');
+      setLocationError('Geolocation is not supported by your browser');
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setClientLocation({
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        });
+        setLocationStatus('success');
+        setLocationError(null);
+      },
+      (err) => {
+        console.warn('Geolocation capture error:', err);
+        setLocationStatus('error');
+        setLocationError(
+          err.code === 1
+            ? 'Location access denied. Please allow browser location access to verify the 10km delivery radius.'
+            : 'Unable to retrieve your location. Please check your browser location settings.'
+        );
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+    );
+  };
+
+  // Bring the form into view whenever it mounts (it appears below the fold) and capture location.
   useEffect(() => {
     formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    fetchLocation();
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
+
+    const basePayload = {
       title: `${category} Request`,
       guests: formData.portions,
       budget: formData.budget,
@@ -50,6 +87,41 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
         Time: ${formData.time}
         Customizations: ${formData.customizations}
       `,
+    };
+
+    if (!clientLocation) {
+      if (locationStatus === 'loading') {
+        alert('Please wait a moment while we detect your location for 10km radius verification.');
+        return;
+      }
+
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const coords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+            setClientLocation(coords);
+            onSubmit({
+              ...basePayload,
+              clientLatitude: coords.latitude,
+              clientLongitude: coords.longitude,
+            });
+          },
+          () => {
+            alert('Location permission is required to verify you are within the 10km delivery radius of the chef.');
+          },
+          { enableHighAccuracy: true, timeout: 10000 }
+        );
+        return;
+      } else {
+        alert('Geolocation is not supported by your browser.');
+        return;
+      }
+    }
+
+    onSubmit({
+      ...basePayload,
+      clientLatitude: clientLocation.latitude,
+      clientLongitude: clientLocation.longitude,
     });
   };
 
@@ -119,6 +191,56 @@ export const RequestForm: React.FC<RequestFormProps> = ({ category, onCancel, on
                 onChange={(e) => setField('customizations', e.target.value)}
                 className="w-full px-5 py-4 bg-stone-50 text-stone-900 placeholder-stone-400 border border-stone-200 rounded-2xl focus:bg-white focus:ring-2 focus:ring-brand-primary/20 focus:border-brand-primary outline-none resize-none transition-all"
               />
+            </div>
+
+            {/* Delivery Location Status (Automatic Geolocation) */}
+            <div className="p-4 rounded-2xl bg-stone-50 border border-stone-200">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="flex items-center gap-2 text-xs font-bold text-stone-900 uppercase tracking-wider">
+                  <MapPin size={14} className="text-brand-primary" />
+                  Delivery Location (10km Check)
+                </label>
+                {locationStatus === 'success' && (
+                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-md border border-emerald-300">
+                    ✓ Verified GPS
+                  </span>
+                )}
+              </div>
+
+              {locationStatus === 'loading' && (
+                <div className="flex items-center gap-2 text-xs text-stone-500 py-1">
+                  <Loader2 size={13} className="animate-spin text-brand-primary" />
+                  <span>Acquiring browser GPS coordinates automatically...</span>
+                </div>
+              )}
+
+              {locationStatus === 'success' && clientLocation && (
+                <div className="flex items-center justify-between text-xs text-stone-600 py-1">
+                  <span className="font-mono text-[11px] text-stone-500">
+                    Lat: {clientLocation.latitude.toFixed(4)}, Lng: {clientLocation.longitude.toFixed(4)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={fetchLocation}
+                    className="text-[11px] text-brand-primary hover:underline font-bold ml-2 cursor-pointer"
+                  >
+                    Refresh GPS
+                  </button>
+                </div>
+              )}
+
+              {locationStatus === 'error' && (
+                <div className="text-xs text-rose-600 bg-rose-50/60 p-2.5 rounded-xl border border-rose-200/60 flex items-start justify-between gap-2 mt-1">
+                  <span className="leading-snug">{locationError}</span>
+                  <button
+                    type="button"
+                    onClick={fetchLocation}
+                    className="text-[11px] font-bold text-brand-primary hover:underline shrink-0 cursor-pointer"
+                  >
+                    Retry
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

@@ -1,7 +1,8 @@
 import React from 'react';
 import { Order } from '../types';
-import { X, Clock, User, Check, ArrowRight } from 'lucide-react';
+import { X, Clock, User, DollarSign, ChevronRight, Check, ArrowRight, MapPin } from 'lucide-react';
 import { motion } from 'motion/react';
+import { ClientLocationMap } from './ClientLocationMap';
 
 interface OrderDetailsModalProps {
   order: Order;
@@ -9,9 +10,11 @@ interface OrderDetailsModalProps {
   onStatusChange: (id: string, status: Order['status']) => void;
   /** Opens the bid modal for an open order. */
   onBid?: (order: Order) => void;
+  chefLat?: number | null;
+  chefLng?: number | null;
 }
 
-export const OrderDetailsModal = ({ order, onClose, onStatusChange, onBid }: OrderDetailsModalProps) => {
+export const OrderDetailsModal = ({ order, onClose, onStatusChange, onBid, chefLat, chefLng }: OrderDetailsModalProps) => {
   const steps = [
     { key: 'pending', label: 'Received' },
     { key: 'quoted', label: 'Assigned' },
@@ -127,6 +130,28 @@ export const OrderDetailsModal = ({ order, onClose, onStatusChange, onBid }: Ord
               </div>
             </div>
           </div>
+
+          {/* Client Delivery Location Map (Interactive Leaflet & OpenStreetMap) */}
+          {order.clientLatitude != null && order.clientLongitude != null && (
+            <div>
+              <div className="flex items-center justify-between mb-2.5">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                  <MapPin size={14} className="text-orange-400" />
+                  Client Delivery Location (Free Map)
+                </h4>
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                  ✓ Verified ≤ 10km
+                </span>
+              </div>
+              <ClientLocationMap
+                clientLat={order.clientLatitude}
+                clientLng={order.clientLongitude}
+                clientName={order.customerName}
+                chefLat={chefLat}
+                chefLng={chefLng}
+              />
+            </div>
+          )}
 
           {/* Ordered items list */}
           <div>

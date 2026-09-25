@@ -8,10 +8,10 @@ VALUES
 ON CONFLICT (uid) DO NOTHING;
 
 -- CHEFS
-INSERT INTO chefs (uid, full_name, email, password_hash, role, approval_status)
+INSERT INTO chefs (uid, full_name, email, password_hash, role, approval_status, latitude, longitude)
 VALUES
-('u3','Chef Nimal','nimal@test.com','hashed_pw3','Chef','Approved'),
-('u4','Chef Kamala','kamala@test.com','hashed_pw4','Chef','Approved')
+('u3','Chef Nimal','nimal@test.com','hashed_pw3','Chef','Approved',6.9271, 79.8612),
+('u4','Chef Kamala','kamala@test.com','hashed_pw4','Chef','Approved', 6.9010, 79.8540)
 ON CONFLICT (uid) DO NOTHING;
 
 -- ADMIN

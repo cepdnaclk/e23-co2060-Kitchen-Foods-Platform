@@ -20,6 +20,7 @@ import {
   Bell,
   Plus,
   MapPin,
+  Navigation,
   ChevronRight,
   Utensils,
   Menu,
@@ -138,25 +139,35 @@ export default function App() {
   const [profile, setProfile] = useState<ChefProfile>(() => {
     const userStr = localStorage.getItem("user");
     if (userStr) {
-      const userObj = JSON.parse(userStr);
-      return {
-        id: userObj.uid || '',
-        name: userObj.full_name || '',
-        specialty: userObj.specialty || '',
-        avatar: userObj.profile_img_url || '',
-        location: userObj.location || '',
-        bio: userObj.bio || '',
-        email: userObj.email || '',
-      };
+      try {
+        const userObj = JSON.parse(userStr);
+        if (userObj.role === 'Chef') {
+          return {
+            id: userObj.uid || 'u3',
+            name: userObj.full_name || 'Chef Nimal',
+            specialty: userObj.specialty || 'Traditional Sri Lankan',
+            avatar: userObj.profile_img_url || '',
+            location: userObj.location || 'Colombo Fort, Sri Lanka',
+            bio: userObj.bio || 'Authentic Sri Lankan home cooking.',
+            email: userObj.email || 'nimal@test.com',
+            latitude: userObj.latitude ?? 6.9271,
+            longitude: userObj.longitude ?? 79.8612,
+          };
+        }
+      } catch (e) {
+        console.error("Error parsing user from localStorage:", e);
+      }
     }
     return {
-      id: '',
-      name: '',
-      specialty: '',
+      id: 'u3',
+      name: 'Chef Nimal',
+      specialty: 'Traditional Sri Lankan',
       avatar: '',
-      location: '',
-      bio: '',
-      email: '',
+      location: 'Colombo Fort, Sri Lanka',
+      bio: 'Authentic Sri Lankan home cooking.',
+      email: 'nimal@test.com',
+      latitude: 6.9271,
+      longitude: 79.8612,
     };
   });
 
@@ -203,7 +214,7 @@ export default function App() {
     setAvatarUrl(profile.avatar);
   }, [profile.avatar]);
   const [menuLoading, setMenuLoading] = useState(false);
-  const [categories, setCategories] = useState<{id: string; name: string}[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
 
   // Fetch this chef's real food items from the DB
   useEffect(() => {
@@ -277,7 +288,9 @@ export default function App() {
           status: (o.status?.toLowerCase() ?? 'pending') as Order['status'],
           createdAt: o.createdAt,
           deliveryTime: o.deliveryTime || "ASAP",
-          description: o.mealDescription
+          description: o.mealDescription,
+          clientLatitude: o.clientLatitude ?? o.client_latitude ?? null,
+          clientLongitude: o.clientLongitude ?? o.client_longitude ?? null,
         }));
 
         setOrders(transformedOrders);
@@ -309,6 +322,48 @@ export default function App() {
     const interval = setInterval(fetchChefQuotes, 5000);
     return () => clearInterval(interval);
   }, [profile.id]);
+
+  const handleUpdateChefLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        try {
+          const res = await fetch(`${API_BASE_URL}/users/${profile.id}/location`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ latitude: lat, longitude: lng }),
+          });
+          if (res.ok) {
+            setProfile(p => ({ ...p, latitude: lat, longitude: lng }));
+            const uStr = localStorage.getItem("user");
+            if (uStr) {
+              const u = JSON.parse(uStr);
+              u.latitude = lat;
+              u.longitude = lng;
+              localStorage.setItem("user", JSON.stringify(u));
+            }
+            alert(`Kitchen GPS location updated: ${lat.toFixed(4)}, ${lng.toFixed(4)}!\nOrders will now be validated within 10km of this location.`);
+          } else {
+            const err = await res.json().catch(() => ({}));
+            alert(err.error || "Failed to update kitchen location");
+          }
+        } catch (e) {
+          console.error("Error updating location:", e);
+          alert("Network error updating kitchen location");
+        }
+      },
+      (err) => {
+        alert("Could not retrieve GPS coordinates: " + err.message);
+      },
+      { enableHighAccuracy: true }
+    );
+  };
 
   const handleProfileUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -1027,6 +1082,15 @@ export default function App() {
                       <MapPin size={12} className="text-brand-primary" />
                       {profile.location || 'Location not set'}
                     </span>
+                    <button
+                      type="button"
+                      onClick={handleUpdateChefLocation}
+                      className="flex items-center gap-1.5 px-3 py-1 bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 rounded-full text-[11px] text-orange-400 font-semibold transition-all cursor-pointer"
+                      title="Click to sync your kitchen location coordinates via browser GPS"
+                    >
+                      <Navigation size={12} className="text-orange-400" />
+                      {profile.latitude != null ? `Kitchen GPS: ${profile.latitude.toFixed(4)}, ${profile.longitude?.toFixed(4)}` : "Set Kitchen Location (GPS)"}
+                    </button>
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/70 border border-stone-900/10 rounded-full text-[11px] text-stone-600 font-semibold">
                       <CheckCircle size={12} className="text-emerald-600" />
                       {deliveredCount} Delivered
@@ -1110,11 +1174,10 @@ export default function App() {
         <div className="pointer-events-none absolute -bottom-32 -right-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl" />
         <div className="relative w-full max-w-md chef-card rounded-3xl p-10 text-center shadow-2xl">
           <div
-            className={`mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center border ${
-              isRejected
+            className={`mx-auto mb-6 w-16 h-16 rounded-2xl flex items-center justify-center border ${isRejected
                 ? "bg-rose-500/10 text-rose-600 border-rose-500/25"
                 : "bg-amber-500/10 text-amber-600 border-amber-500/25"
-            }`}
+              }`}
           >
             {isRejected ? <AlertTriangle size={28} /> : <Clock size={28} />}
           </div>
@@ -1168,6 +1231,8 @@ export default function App() {
               onClose={() => setSelectedOrderForModal(null)}
               onStatusChange={handleStatusChange}
               onBid={setBidOrder}
+              chefLat={profile.latitude}
+              chefLng={profile.longitude}
             />
           )}
         </AnimatePresence>
@@ -1287,25 +1352,26 @@ export default function App() {
               </p>
             </div>
           </div>
-
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="relative hidden sm:block">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={15} />
+          <div className="flex items-center gap-3" shrink-0>
+            <button
+              onClick={handleUpdateChefLocation}
+              className="hidden sm:flex items-center gap-1.5 px-3 py-2 bg-slate-900 hover:bg-slate-850 border border-slate-800 hover:border-orange-500/40 rounded-xl text-xs font-semibold text-slate-300 hover:text-white transition-all cursor-pointer shadow-sm"
+              title="Click to sync your kitchen GPS coordinates for 10km delivery radius validation"
+            >
+              <Navigation size={13} className="text-orange-400" />
+              <span>
+                {profile.latitude != null
+                  ? `Kitchen GPS: ${profile.latitude.toFixed(2)}, ${profile.longitude?.toFixed(2)}`
+                  : 'Set Kitchen GPS'}
+              </span>
+            </button>
+            <div className="relative hidden md:block">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
               <input
                 type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search orders, dishes..."
-                className="pl-9 pr-8 py-2.5 bg-white border border-stone-200 rounded-full text-xs focus:outline-none focus:ring-2 focus:ring-brand-primary/40 focus:border-brand-primary text-stone-900 placeholder-stone-400 w-52 lg:w-64 transition-all"
+                placeholder="Search catalog, order numbers..."
+                className="pl-10 pr-4 py-2 bg-slate-900 border border-slate-800 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-orange-500 text-slate-200 w-60"
               />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 p-0.5 text-stone-400 hover:text-stone-900 transition-colors"
-                >
-                  <X size={13} />
-                </button>
-              )}
             </div>
 
             <div className="relative">

@@ -16,7 +16,9 @@ CREATE TABLE IF NOT EXISTS chefs (
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) DEFAULT 'Chef' CHECK (role = 'Chef'),
     profile_img_url VARCHAR(255),
-    approval_status VARCHAR(20) DEFAULT 'Pending' CHECK (approval_status IN ('Pending', 'Approved', 'Rejected'))
+    approval_status VARCHAR(20) DEFAULT 'Pending' CHECK (approval_status IN ('Pending', 'Approved', 'Rejected')),
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION
 );
 
 -- ADMIN TABLE
@@ -65,6 +67,8 @@ CREATE TABLE IF NOT EXISTS orders (
     status VARCHAR(20) CHECK (status IN ('Pending', 'Preparing', 'Ready', 'Completed', 'Cancelled', 'Delivered', 'Quoted', 'Paid', 'Expired')) DEFAULT 'Pending',
     -- Bidding deadline: the order stops accepting quotes once this passes.
     expires_at TIMESTAMP,
+    client_latitude DOUBLE PRECISION,
+    client_longitude DOUBLE PRECISION,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

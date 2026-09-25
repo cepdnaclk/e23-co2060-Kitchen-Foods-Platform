@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Order } from '../types';
-import { Clock, CheckCircle2, ChefHat, Package, AlertCircle, ArrowRight, Eye, HandCoins, XCircle } from 'lucide-react';
+import { Clock, CheckCircle2, ChefHat, Package, AlertCircle, ArrowRight, Eye, HandCoins, XCircle, MapPin } from 'lucide-react';
 import { motion } from 'motion/react';
 
 interface OrderCardProps {
@@ -171,6 +171,22 @@ export const OrderCard = ({ order, onStatusChange, onViewDetails, onBid, myQuote
         <div className="mb-4 p-2.5 bg-stone-100/80 border border-stone-900/10 rounded-xl text-[11px] text-stone-500">
           <span className="font-bold text-stone-700 block mb-0.5">Note:</span>
           <p className="line-clamp-2 italic">"{order.description}"</p>
+        </div>
+      )}
+
+      {order.clientLatitude != null && order.clientLongitude != null && (
+        <div className="mb-3 px-2.5 py-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-between text-[11px]">
+          <span className="text-emerald-600 font-semibold flex items-center gap-1">
+            <MapPin size={12} /> Client GPS verified (≤10km)
+          </span>
+          {onViewDetails && (
+            <button
+              onClick={() => onViewDetails(order)}
+              className="text-brand-primary hover:underline font-bold cursor-pointer text-[10px]"
+            >
+              View Map
+            </button>
+          )}
         </div>
       )}
 

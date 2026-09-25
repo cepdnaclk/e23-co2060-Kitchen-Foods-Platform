@@ -66,10 +66,10 @@ class Order {
       row.delivery_time,
       row.customer_name,
       row.food_item_name,
-      row.client_latitude,
-      row.client_longitude,
       row.expires_at,
       row.quote_count ?? 0,
+      row.client_latitude,
+      row.client_longitude,
     );
   }
 
@@ -120,7 +120,7 @@ class Order {
         id, customer_id, meal_description, food_item_id, chef_id,
         quantity, total_price, delivery_date, delivery_time, expires_at,
         client_latitude, client_longitude
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10, $11)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
       RETURNING *`,
       [
         id,

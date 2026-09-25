@@ -1,10 +1,6 @@
 import React from 'react';
 import { Order } from '../types';
-<<<<<<< HEAD
-import { X, Clock, User, Check, ArrowRight } from 'lucide-react';
-=======
-import { X, Clock, User, DollarSign, ChevronRight, Check, MapPin } from 'lucide-react';
->>>>>>> 8e145ed (Add location validation feature using OpenStreetMap)
+import { X, Clock, User, DollarSign, ChevronRight, Check, ArrowRight, MapPin } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ClientLocationMap } from './ClientLocationMap';
 
@@ -12,19 +8,13 @@ interface OrderDetailsModalProps {
   order: Order;
   onClose: () => void;
   onStatusChange: (id: string, status: Order['status']) => void;
-<<<<<<< HEAD
   /** Opens the bid modal for an open order. */
   onBid?: (order: Order) => void;
-}
-
-export const OrderDetailsModal = ({ order, onClose, onStatusChange, onBid }: OrderDetailsModalProps) => {
-=======
   chefLat?: number | null;
   chefLng?: number | null;
 }
 
-export const OrderDetailsModal = ({ order, onClose, onStatusChange, chefLat, chefLng }: OrderDetailsModalProps) => {
->>>>>>> 8e145ed (Add location validation feature using OpenStreetMap)
+export const OrderDetailsModal = ({ order, onClose, onStatusChange, onBid, chefLat, chefLng }: OrderDetailsModalProps) => {
   const steps = [
     { key: 'pending', label: 'Received' },
     { key: 'quoted', label: 'Assigned' },

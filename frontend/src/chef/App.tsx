@@ -365,66 +365,6 @@ export default function App() {
     );
   };
 
-  // Fetch this chef's bids so cards can show "Your bid" state.
-  useEffect(() => {
-    if (!profile.id) return;
-    const fetchChefQuotes = async () => {
-      try {
-        const res = await fetch(`${API_BASE_URL}/quotes/chef/${profile.id}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        setChefQuotes(data);
-      } catch (err) {
-        console.error('Error fetching chef quotes:', err);
-      }
-    };
-    fetchChefQuotes();
-    const interval = setInterval(fetchChefQuotes, 5000);
-    return () => clearInterval(interval);
-  }, [profile.id]);
-
-  const handleUpdateChefLocation = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      async (pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        try {
-          const res = await fetch(`${API_BASE_URL}/users/${profile.id}/location`, {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ latitude: lat, longitude: lng }),
-          });
-          if (res.ok) {
-            setProfile(p => ({ ...p, latitude: lat, longitude: lng }));
-            const uStr = localStorage.getItem("user");
-            if (uStr) {
-              const u = JSON.parse(uStr);
-              u.latitude = lat;
-              u.longitude = lng;
-              localStorage.setItem("user", JSON.stringify(u));
-            }
-            alert(`Kitchen GPS location updated: ${lat.toFixed(4)}, ${lng.toFixed(4)}!\nOrders will now be validated within 10km of this location.`);
-          } else {
-            const err = await res.json().catch(() => ({}));
-            alert(err.error || "Failed to update kitchen location");
-          }
-        } catch (e) {
-          console.error("Error updating location:", e);
-          alert("Network error updating kitchen location");
-        }
-      },
-      (err) => {
-        alert("Could not retrieve GPS coordinates: " + err.message);
-      },
-      { enableHighAccuracy: true }
-    );
-  };
-
   const handleProfileUpdate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);

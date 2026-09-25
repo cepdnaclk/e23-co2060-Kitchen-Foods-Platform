@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS chefs (
     password_hash VARCHAR(255) NOT NULL,
     role VARCHAR(20) DEFAULT 'Chef' CHECK (role = 'Chef'),
     profile_img_url VARCHAR(255),
-    approval_status VARCHAR(20) DEFAULT 'Pending' CHECK (approval_status IN ('Pending', 'Approved', 'Rejected'))
+    approval_status VARCHAR(20) DEFAULT 'Pending' CHECK (approval_status IN ('Pending', 'Approved', 'Rejected')),
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION
 );

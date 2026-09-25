@@ -46,6 +46,8 @@ export interface PlaceOrderPayload {
   deliveryDate?: string;
   deliveryTime: string;
   mealDescription: string;
+  clientLatitude?: number;
+  clientLongitude?: number;
 }
 
 /** Map a backend order into the frontend's Request shape. */

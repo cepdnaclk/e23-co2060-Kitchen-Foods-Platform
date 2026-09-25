@@ -3,10 +3,10 @@ import { renderHook, waitFor, act } from "@testing-library/react";
 import { useCustomerOrders } from "./useCustomerOrders";
 
 // ---------------------------------------------------------------------------
-// useCustomerOrders — loads orders, polls every 30s, no-ops when logged out.
+// useCustomerOrders — loads orders, polls every 3s, no-ops when logged out.
 //
 // Fake timers use shouldAdvanceTime so microtasks still flow (waitFor keeps
-// working) while we can fast-forward the 30s polling interval.
+// working) while we can fast-forward the 3s polling interval.
 // ---------------------------------------------------------------------------
 
 const fetchMock = vi.fn();
@@ -59,7 +59,7 @@ describe("useCustomerOrders", () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("polls again after 30 seconds", async () => {
+  it("polls again after 3 seconds", async () => {
     localStorage.setItem("user", JSON.stringify({ uid: "u-cust-1" }));
     fetchMock.mockResolvedValue({
       ok: true,
@@ -70,12 +70,12 @@ describe("useCustomerOrders", () => {
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(30_000);
+      await vi.advanceTimersByTimeAsync(3_000);
     });
     expect(fetchMock).toHaveBeenCalledTimes(2);
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(30_000);
+      await vi.advanceTimersByTimeAsync(3_000);
     });
     expect(fetchMock).toHaveBeenCalledTimes(3);
   });
@@ -110,7 +110,7 @@ describe("useCustomerOrders", () => {
     await waitFor(() => expect(result.current.requests).toHaveLength(1));
 
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(30_000);
+      await vi.advanceTimersByTimeAsync(3_000);
     });
     expect(result.current.requests).toHaveLength(1);
     expect(result.current.requests[0].id).toBe("ORD-1");

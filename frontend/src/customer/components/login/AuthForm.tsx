@@ -59,6 +59,15 @@ export const AuthForm: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
+
+      const contentType = response.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        const preview = (await response.text()).trim().slice(0, 120);
+        throw new Error(
+          `Server error (HTTP ${response.status}) — expected JSON but got: ${preview || 'empty response'}`,
+        );
+      }
+
       const data = await response.json();
 
       if (!response.ok) {

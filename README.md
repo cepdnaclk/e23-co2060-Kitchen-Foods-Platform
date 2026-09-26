@@ -68,4 +68,4 @@ cd backend && DB_PORT=5433 npm test
 
 ### Deployment
 
-The deployed site can be found at https://e23kitchenfood.up.railway.app/
+The deployed site can be found at https://e23-co2060-kitchen-foods-platform-production.up.railway.app

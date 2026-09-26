@@ -7,6 +7,7 @@
 
 import type { ReactNode } from 'react';
 import { Flame, Gift, Zap } from 'lucide-react';
+import auntyKamalaImg from '../assets/aunty-kamala.png';
 
 export interface Promo {
   id: number;
@@ -27,7 +28,7 @@ export const PROMOS: Promo[] = [
     title: 'Chef of the Month: \nAunty Kamala\'s Kitchen',
     description:
       "Experience the authentic taste of Jaffna with Auntie Kamala's signature spice blends. Exclusive 20% discount this week.",
-    image: '/src/assets/aunty-kamala.jpg',
+    image: auntyKamalaImg,
     stats: ['4.9 Rating', '120+ Orders'],
     color: 'from-brand-primary/20 to-transparent',
   },
